@@ -63,7 +63,7 @@ function Admin() {
 
   const fetchAdminUsers = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/admin/users');
+      const res = await fetch('/api/admin/users');
       const data = await res.json();
       setAdminUsers(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -75,7 +75,7 @@ function Admin() {
     e.preventDefault();
     if (!newAdminEmail) return;
     try {
-      const res = await fetch('http://localhost:5000/api/admin/users', {
+      const res = await fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: newAdminEmail })
@@ -96,7 +96,7 @@ function Admin() {
   const handleRemoveAdmin = async (id) => {
     if (!window.confirm("Are you sure you want to remove this admin?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/admin/users/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/admin/users/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setAdminUsers(adminUsers.filter(u => u._id !== id));
       }
@@ -107,7 +107,7 @@ function Admin() {
 
   const fetchHomepageData = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/homepage');
+      const res = await fetch('/api/homepage');
       const data = await res.json();
       setHomepageData(data);
     } catch (err) {
@@ -117,7 +117,7 @@ function Admin() {
 
   const fetchProductsData = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/products');
+      const res = await fetch('/api/products');
       const data = await res.json();
       setProducts(data.products || []);
       setCategories(data.categories || []);
@@ -128,7 +128,7 @@ function Admin() {
 
   const fetchMessagesData = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/messages');
+      const res = await fetch('/api/messages');
       const data = await res.json();
       setMessages(data || []);
     } catch (err) {
@@ -151,7 +151,7 @@ function Admin() {
     formData.append('image', file);
 
     try {
-      const res = await fetch('http://localhost:5000/api/upload', {
+      const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
@@ -181,7 +181,7 @@ function Admin() {
   const handleSaveHomepage = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/homepage', {
+      const res = await fetch('/api/homepage', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(homepageData)
@@ -203,7 +203,7 @@ function Admin() {
     formData.append('image', file);
 
     try {
-      const res = await fetch('http://localhost:5000/api/upload', {
+      const res = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
       });
@@ -241,7 +241,7 @@ function Admin() {
       const updatedProducts = products.map(p => p.id === editingProduct.id ? editingProduct : p);
       setProducts(updatedProducts);
       
-      const res = await fetch('http://localhost:5000/api/products', {
+      const res = await fetch('/api/products', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ categories, products: updatedProducts })
@@ -263,7 +263,7 @@ function Admin() {
   const handleDeleteMessage = async (id) => {
     if (!window.confirm("Are you sure you want to delete this message?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/messages/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/messages/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setMessages(messages.filter(m => m._id !== id));
       }
@@ -320,7 +320,7 @@ function Admin() {
                 size="large"
                 onSuccess={async (credentialResponse) => {
                   try {
-                    const res = await fetch('http://localhost:5000/api/admin/login', {
+                    const res = await fetch('/api/admin/login', {
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       body: JSON.stringify({ credential: credentialResponse.credential })

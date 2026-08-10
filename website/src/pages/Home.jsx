@@ -11,12 +11,12 @@ function Home() {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/homepage')
+    fetch('/api/homepage')
       .then(res => res.json())
       .then(data => setHomepageData(data))
       .catch(err => console.error(err));
 
-    fetch('http://localhost:5000/api/products')
+    fetch('/api/products')
       .then(res => res.json())
       .then(data => {
         setProducts(data.products || []);
