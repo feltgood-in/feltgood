@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, Link, useLocation } from 'react-router-dom';
 import { useInquiry } from '../context/InquiryContext';
-import { AdvancedImage } from '@cloudinary/react';
+import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { cld } from '../cloudinary';
 
@@ -65,13 +65,15 @@ function Search() {
             <Link to={`/product/${product.id}`} key={product.id} className="card product-card-filter">
               <div className={`card-image ${product.color}`} style={{ height: '240px', position: 'relative' }}>
                 <AdvancedImage 
-                  cldImg={cld.image(product.image).resize(fill().width(300).height(300))} 
+                  cldImg={cld.image(product.image).resize(fill().width(300).height(300)).format('auto').quality('auto')} 
+                  plugins={[lazyload(), placeholder({mode: 'blur'})]}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
               </div>
               <div className="card-content" style={{ padding: '1rem' }}>
                 <h3 className="product-title">{product.name}</h3>
                 <div className="product-prices">
+                  {product.oldPrice && <span className="price-old">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{product.oldPrice.toFixed(2)}</span>}
                   <span className="price-new">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{product.price.toFixed(2)}</span>
                 </div>
                 <button 

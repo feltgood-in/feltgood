@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useInquiry } from '../context/InquiryContext';
-import { AdvancedImage } from '@cloudinary/react';
+import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { cld } from '../cloudinary';
 
@@ -53,16 +53,18 @@ function ProductDetail() {
           {/* Images Section */}
           <div className="product-images">
             <div className={`equal-image ${product.colors[0]}`}>
-              <AdvancedImage 
-                cldImg={cld.image(product.images[0]).resize(fill().width(600).height(600))} 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
+               <AdvancedImage 
+                  cldImg={cld.image(product.images[0]).resize(fill().width(600).height(600)).format('auto').quality('auto')} 
+                  plugins={[lazyload(), placeholder({mode: 'blur'})]}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
             </div>
             <div className={`equal-image ${product.colors[1]}`}>
-              <AdvancedImage 
-                cldImg={cld.image(product.images[1]).resize(fill().width(600).height(600))} 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
+               <AdvancedImage 
+                  cldImg={cld.image(product.images[1]).resize(fill().width(600).height(600)).format('auto').quality('auto')} 
+                  plugins={[lazyload(), placeholder({mode: 'blur'})]}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
             </div>
           </div>
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { AdvancedImage } from '@cloudinary/react';
+import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { cld } from '../cloudinary';
 
@@ -57,7 +57,8 @@ function Contact() {
             </p>
             <div className="hide-on-mobile" style={{ aspectRatio: '1/1', width: '100%', maxWidth: '300px', margin: '0 auto', display: 'flex' }}>
               <AdvancedImage 
-                cldImg={cld.image('cld-sample-3').resize(fill().width(400).height(400))} 
+                cldImg={cld.image('cld-sample-3').resize(fill().width(400).height(400)).format('auto').quality('auto')} 
+                plugins={[lazyload(), placeholder({mode: 'blur'})]}
                 style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%', border: '2px solid var(--color-bg)' }}
               />
             </div>

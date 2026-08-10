@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useInquiry } from '../context/InquiryContext';
-import { AdvancedImage } from '@cloudinary/react';
+import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { cld } from '../cloudinary';
 
@@ -11,6 +11,9 @@ function Collections() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [viewMode, setViewMode] = useState('3');
+  const [sortOrder, setSortOrder] = useState('low-to-high');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
 
   useEffect(() => {
     fetch('/api/products')
@@ -25,13 +28,30 @@ function Collections() {
   // Filter products based on selected category
   let displayedProducts = [];
   if (selectedCategory === 'all') {
-    displayedProducts = products;
+    displayedProducts = [...products];
   } else {
     const cat = categories.find(c => c.id === selectedCategory);
     if (cat) {
-      displayedProducts = cat.products.map(p => products.find(fullP => fullP.id === p.id));
+      displayedProducts = cat.products.map(p => products.find(fullP => fullP.id === p.id)).filter(Boolean);
     }
   }
+
+  // Apply price filter
+  if (minPrice !== '') {
+    displayedProducts = displayedProducts.filter(p => p.price >= Number(minPrice));
+  }
+  if (maxPrice !== '') {
+    displayedProducts = displayedProducts.filter(p => p.price <= Number(maxPrice));
+  }
+
+  // Sort products
+  displayedProducts.sort((a, b) => {
+    const priceA = a.price || 0;
+    const priceB = b.price || 0;
+    if (sortOrder === 'low-to-high') return priceA - priceB;
+    if (sortOrder === 'high-to-low') return priceB - priceA;
+    return 0;
+  });
 
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
@@ -74,9 +94,9 @@ function Collections() {
             <rect x="19" y="4" width="4" height="16" rx="1"/>
           </svg>
         </div>
-        <select className="sort-dropdown">
-          <option>Price, low to high</option>
-          <option>Price, high to low</option>
+        <select className="sort-dropdown" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
+          <option value="low-to-high">Price, low to high</option>
+          <option value="high-to-low">Price, high to low</option>
         </select>
         <button 
           className="hide-on-desktop" 
@@ -115,20 +135,12 @@ function Collections() {
 
           <div className="filter-section">
             <h3 className="filter-title">Price</h3>
-            <div className="price-slider-mock">
-              <div className="slider-track">
-                <div className="slider-fill"></div>
-                <div className="slider-handle left"></div>
-                <div className="slider-handle right"></div>
-              </div>
-            </div>
             <div className="price-inputs">
               <span>Price:</span>
-              <input type="text" placeholder="$ 0" readOnly />
+              <input type="number" placeholder="0" value={minPrice} onChange={e => setMinPrice(e.target.value)} min="0" />
               <span>-</span>
-              <input type="text" placeholder="$ 999" readOnly />
+              <input type="number" placeholder="999" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} min="0" />
             </div>
-            <button className="btn btn-outline" style={{padding: '0.4rem 1rem', marginTop: '1rem', fontSize: '0.8rem'}}>FILTER</button>
           </div>
         </aside>
 
@@ -138,7 +150,8 @@ function Collections() {
             <Link to={`/product/${product.id}`} key={product.id} className="card product-card-filter">
               <div className={`card-image ${product.color}`} style={{ aspectRatio: '1 / 1', height: 'auto', position: 'relative' }}>
                 <AdvancedImage 
-                  cldImg={cld.image(product.image).resize(fill().width(300).height(300))} 
+                  cldImg={cld.image(product.image).resize(fill().width(300).height(300)).format('auto').quality('auto')} 
+                  plugins={[lazyload(), placeholder({mode: 'blur'})]}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
                 {product.badgeText && <div className="discount-badge">{product.badgeText}</div>}
@@ -147,7 +160,7 @@ function Collections() {
                 <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '0.2rem', fontFamily: 'monospace' }}>{product.itemNumber}</div>
                 <h3 className="product-title">{product.name}</h3>
                 <div className="product-prices">
-                  <span className="price-old">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{(product.price * 2).toFixed(2)}</span>
+                  {product.oldPrice && <span className="price-old">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{product.oldPrice.toFixed(2)}</span>}
                   <span className="price-new">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{product.price.toFixed(2)}</span>
                 </div>
                 <button 

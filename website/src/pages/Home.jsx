@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { AdvancedImage } from '@cloudinary/react';
+import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { cld } from '../cloudinary';
 
@@ -98,7 +98,8 @@ function Home() {
             <div key={slide.id} className={`carousel-slide ${slide.color}`} style={{ padding: 0 }}>
                {slide.image && (
                  <AdvancedImage 
-                   cldImg={cld.image(slide.image)} 
+                   cldImg={cld.image(slide.image).format('auto').quality('auto')} 
+                   plugins={[lazyload(), placeholder({mode: 'blur'})]}
                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                  />
                )}
@@ -136,7 +137,8 @@ function Home() {
               <Link key={card.id} to={card.filter === 'all' ? '/collections' : `/collections?filter=${card.filter}`} className={`promo-card ${gradients[idx % gradients.length]}`} style={{ padding: 0, textDecoration: 'none', position: 'relative' }}>
                 {card.image && (
                    <AdvancedImage 
-                     cldImg={cld.image(card.image).resize(fill().width(300).height(420))} 
+                     cldImg={cld.image(card.image).resize(fill().width(300).height(420)).format('auto').quality('auto')} 
+                     plugins={[lazyload(), placeholder({mode: 'blur'})]}
                      style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '8px' }}
                    />
                  )}
@@ -173,7 +175,8 @@ function Home() {
                   <Link to={`/product/${product.id}`} key={product.id} className="card">
                     <div className={`card-image ${product.color || 'bg-sand'}`}>
                       <AdvancedImage 
-                        cldImg={cld.image(product.image).resize(fill().width(400).height(400))} 
+                        cldImg={cld.image(product.image).resize(fill().width(400).height(400)).format('auto').quality('auto')} 
+                        plugins={[lazyload(), placeholder({mode: 'blur'})]}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
                     </div>

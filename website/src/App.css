@@ -1094,8 +1094,7 @@
 .product-card-filter .product-title {
   font-size: 0.9rem;
   font-weight: 600;
-  margin-bottom: 0.5rem;
-  height: 2.7rem;
+  margin-bottom: 0.15rem;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -1118,7 +1117,7 @@
 }
 
 .price-new {
-  color: var(--color-secondary);
+  color: var(--color-primary);
   font-weight: 700;
 }
 

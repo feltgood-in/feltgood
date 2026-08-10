@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useNavigate } from 'react-router-dom';
 import { useInquiry } from '../context/InquiryContext';
-import { AdvancedImage } from '@cloudinary/react';
+import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { cld } from '../cloudinary';
 
@@ -36,7 +36,8 @@ function ItemList() {
               <div key={`${item.id}-${index}`} className="card">
                 <div className={`card-image ${item.color}`}>
                   <AdvancedImage 
-                    cldImg={cld.image(item.image).resize(fill().width(300).height(300))} 
+                    cldImg={cld.image(item.image).resize(fill().width(300).height(300)).format('auto').quality('auto')} 
+                    plugins={[lazyload(), placeholder({mode: 'blur'})]}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 </div>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { createPortal } from 'react-dom';
-import { AdvancedImage } from '@cloudinary/react';
+import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { cld } from '../cloudinary';
 import { categories as defaultCategories, products as defaultProducts } from '../data/products';
@@ -811,6 +811,17 @@ function Admin() {
                       </div>
                     </div>
 
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                      <div className="form-group">
+                        <label>Current Price</label>
+                        <input type="number" step="0.01" value={editingProduct.price || 0} onChange={e => setEditingProduct({...editingProduct, price: parseFloat(e.target.value)})} className="form-control" />
+                      </div>
+                      <div className="form-group">
+                        <label>Old Price (Strikethrough)</label>
+                        <input type="number" step="0.01" value={editingProduct.oldPrice || ''} onChange={e => setEditingProduct({...editingProduct, oldPrice: e.target.value ? parseFloat(e.target.value) : undefined})} className="form-control" placeholder="Leave empty to hide" />
+                      </div>
+                    </div>
+
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>
                       <div className="form-group">
                         <label>Currency</label>
@@ -1263,3 +1274,4 @@ function Admin() {
 }
 
 export default Admin;
+
