@@ -1,0 +1,109 @@
+{
+  "banners": [
+    {
+      "id": "b1",
+      "image": "cld-sample",
+      "title": "Winter Collection",
+      "link": "/collections"
+    },
+    {
+      "id": "b2",
+      "image": "cld-sample-2",
+      "title": "New Arrivals",
+      "link": "/collections"
+    },
+    {
+      "id": "b3",
+      "image": "cld-sample-3",
+      "title": "Best Sellers",
+      "link": "/collections"
+    },
+    {
+      "id": "b4",
+      "image": "cld-sample-4",
+      "title": "Holiday Specials",
+      "link": "/collections"
+    }
+  ],
+  "featuredCards": [
+    "tree-patchwork",
+    "stocking-mistletoe",
+    "wreath-forest",
+    "advent-village",
+    "ornament-elephant"
+  ],
+  "promoCards": [
+    {
+      "id": "pc1",
+      "labelSmall": "Under",
+      "labelLarge": "29",
+      "image": "cld-sample-5",
+      "filter": "all"
+    },
+    {
+      "id": "pc2",
+      "labelSmall": "Under",
+      "labelLarge": "49",
+      "image": "cld-sample-5",
+      "filter": "seasonal-decor"
+    },
+    {
+      "id": "pc3",
+      "labelSmall": "Under",
+      "labelLarge": "99",
+      "image": "cld-sample-5",
+      "filter": "festive-essentials"
+    },
+    {
+      "id": "pc4",
+      "labelSmall": "Under",
+      "labelLarge": "149",
+      "image": "cld-sample-5",
+      "filter": "hanging-ornaments"
+    },
+    {
+      "id": "pc5",
+      "labelSmall": "Premium",
+      "labelLarge": "Collection",
+      "image": "cld-sample-5",
+      "filter": "everyday-gifting"
+    }
+  ],
+  "exploreButton": {
+    "text": "Explore",
+    "filter": "all"
+  },
+  "categoryFeaturedItems": {
+    "seasonal-decor": [
+      "stocking-ornament",
+      "tree-nordic",
+      "tree-scalloped",
+      "tree-petal"
+    ],
+    "festive-essentials": [
+      "stocking-mistletoe",
+      "stocking-ornament",
+      "stocking-classic",
+      "stocking-star"
+    ],
+    "botanical-edit": [
+      "wreath-forest",
+      "mistletoe-hanging",
+      "mistletoe-bundle",
+      "garland-berry"
+    ],
+    "countdown": [
+      "advent-village",
+      "advent-evergreen",
+      "advent-star",
+      "advent-pocket"
+    ],
+    "hanging-ornaments": [
+      "ornament-elephant",
+      "ornament-dog",
+      "ornament-owl",
+      "ornament-fox"
+    ]
+  },
+  "categoryTitles": {}
+}

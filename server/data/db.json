@@ -1,0 +1,1084 @@
+{
+  "categories": [
+    {
+      "id": "seasonal-decor",
+      "title": "Felt Christmas Trees",
+      "subtitle": "Tabletop pieces that bring colour and a soft sculptural presence to festive styling.",
+      "products": [
+        {
+          "id": "tree-patchwork",
+          "name": "Patchwork Star Tree",
+          "image": "cld-sample",
+          "color": "bg-sage",
+          "price": 4.5
+        },
+        {
+          "id": "tree-nordic",
+          "name": "Nordic Dot Tree",
+          "image": "cld-sample",
+          "color": "bg-forest",
+          "price": 4.5
+        },
+        {
+          "id": "tree-scalloped",
+          "name": "Scalloped Pine Tree",
+          "image": "cld-sample",
+          "color": "bg-crimson",
+          "price": 4.5
+        },
+        {
+          "id": "tree-petal",
+          "name": "Petal Layer Tree",
+          "image": "cld-sample",
+          "color": "bg-sand",
+          "price": 4.5
+        }
+      ]
+    },
+    {
+      "id": "festive-essentials",
+      "title": "Christmas Stockings",
+      "subtitle": "Statement stockings with appliqué, embroidery and hand-finished edges.",
+      "products": [
+        {
+          "id": "stocking-mistletoe",
+          "name": "Mistletoe Berry Stocking",
+          "image": "cld-sample-2",
+          "color": "bg-crimson",
+          "price": 6
+        },
+        {
+          "id": "stocking-ornament",
+          "name": "Ornament Appliqué Stocking",
+          "image": "cld-sample-2",
+          "color": "bg-sage",
+          "price": 6
+        },
+        {
+          "id": "stocking-classic",
+          "name": "Classic Red Stocking",
+          "image": "cld-sample-2",
+          "color": "bg-sand",
+          "price": 6
+        },
+        {
+          "id": "stocking-star",
+          "name": "Star Stitched Stocking",
+          "image": "cld-sample-2",
+          "color": "bg-forest",
+          "price": 6
+        }
+      ]
+    },
+    {
+      "id": "botanical-edit",
+      "title": "Wreaths, Garlands & Mistletoe",
+      "subtitle": "Soft, reusable greenery for doors, windows, shelves and installations.",
+      "products": [
+        {
+          "id": "wreath-forest",
+          "name": "Forest Felt Wreath",
+          "image": "cld-sample-3",
+          "color": "bg-forest",
+          "price": 8.5,
+          "desc": "Textured loop wreath with red and ivory berries"
+        },
+        {
+          "id": "mistletoe-hanging",
+          "name": "Mistletoe Hanging",
+          "image": "cld-sample-3",
+          "color": "bg-sage",
+          "price": 4,
+          "desc": "Layered leaves with hand-rolled felt berries"
+        },
+        {
+          "id": "mistletoe-bundle",
+          "name": "Mistletoe Bundle",
+          "image": "cld-sample-3",
+          "color": "bg-sand",
+          "price": 5.5,
+          "desc": "Dimensional foliage finished with a festive red bow"
+        },
+        {
+          "id": "garland-berry",
+          "name": "Festive Berry Garland",
+          "image": "cld-sample-3",
+          "color": "bg-crimson",
+          "price": 7.5,
+          "desc": "Flexible garland in a joyful multicolour palette"
+        }
+      ]
+    },
+    {
+      "id": "countdown",
+      "title": "Advent Calendars",
+      "subtitle": "Twenty-five tactile pockets turn the Christmas countdown into a family ritual.",
+      "products": [
+        {
+          "id": "advent-village",
+          "name": "Village Advent Calendar",
+          "image": "cld-sample-2",
+          "color": "bg-sand",
+          "price": 12
+        },
+        {
+          "id": "advent-evergreen",
+          "name": "Evergreen Advent Calendar",
+          "image": "cld-sample-2",
+          "color": "bg-sage",
+          "price": 12
+        },
+        {
+          "id": "advent-star",
+          "name": "Star Countdown",
+          "image": "cld-sample-2",
+          "color": "bg-crimson",
+          "price": 10
+        },
+        {
+          "id": "advent-pocket",
+          "name": "Pocket Calendar",
+          "image": "cld-sample-2",
+          "color": "bg-forest",
+          "price": 10
+        }
+      ]
+    },
+    {
+      "id": "hanging-ornaments",
+      "title": "Woodland Companions",
+      "subtitle": "Playful, tactile characters for trees, nursery décor, and gifting.",
+      "products": [
+        {
+          "id": "ornament-elephant",
+          "name": "Festival Elephant",
+          "image": "cld-sample-4",
+          "color": "bg-crimson",
+          "price": 2.5
+        },
+        {
+          "id": "ornament-dog",
+          "name": "Spotty Dog",
+          "image": "cld-sample-4",
+          "color": "bg-sand",
+          "price": 2.5
+        },
+        {
+          "id": "ornament-owl",
+          "name": "Wide-Eyed Owl",
+          "image": "cld-sample-4",
+          "color": "bg-sage",
+          "price": 2.5
+        },
+        {
+          "id": "ornament-fox",
+          "name": "Scarf Fox",
+          "image": "cld-sample-4",
+          "color": "bg-forest",
+          "price": 2.5
+        }
+      ]
+    },
+    {
+      "id": "playful-decor",
+      "title": "Cactus & Statement Shapes",
+      "subtitle": "Graphic silhouettes and bright embroidery add personality beyond the traditional.",
+      "products": [
+        {
+          "id": "decor-cactus-bead",
+          "name": "Beaded Cactus",
+          "image": "cld-sample",
+          "color": "bg-sage",
+          "price": 3.5
+        },
+        {
+          "id": "decor-cactus-stitch",
+          "name": "Stitched Cactus",
+          "image": "cld-sample",
+          "color": "bg-forest",
+          "price": 3.5
+        },
+        {
+          "id": "decor-strawberry",
+          "name": "Pearl Strawberry",
+          "image": "cld-sample-4",
+          "color": "bg-crimson",
+          "price": 3
+        },
+        {
+          "id": "decor-star",
+          "name": "Graphic Star",
+          "image": "cld-sample-4",
+          "color": "bg-sand",
+          "price": 3
+        }
+      ]
+    },
+    {
+      "id": "everyday-gifting",
+      "title": "Felt Key Rings",
+      "subtitle": "Characterful bag charms and key companions—lightweight and giftable.",
+      "products": [
+        {
+          "id": "key-bear",
+          "name": "Festive Bear",
+          "image": "cld-sample-4",
+          "color": "bg-forest",
+          "price": 1.5
+        },
+        {
+          "id": "key-hedgehog",
+          "name": "Little Hedgehog",
+          "image": "cld-sample-4",
+          "color": "bg-sand",
+          "price": 1.5
+        },
+        {
+          "id": "key-polar",
+          "name": "Polar Bear",
+          "image": "cld-sample-4",
+          "color": "bg-sage",
+          "price": 1.5
+        },
+        {
+          "id": "key-bird",
+          "name": "Folk Bird",
+          "image": "cld-sample-4",
+          "color": "bg-crimson",
+          "price": 1.5
+        }
+      ]
+    },
+    {
+      "id": "animal-stories",
+      "title": "Animal Stories",
+      "subtitle": "Whimsical animal narratives captured in felt.",
+      "products": []
+    },
+    {
+      "id": "celebration-bunting",
+      "title": "Celebration Bunting",
+      "subtitle": "Festive bunting perfect for any occasion.",
+      "products": []
+    }
+  ],
+  "products": [
+    {
+      "id": "tree-patchwork",
+      "name": "Patchwork Star Tree",
+      "image": "cld-sample",
+      "color": "bg-sage",
+      "price": 4.5,
+      "subtitle": "Tabletop pieces that bring colour and a soft sculptural presence to festive styling.",
+      "description": "Beautifully crafted Patchwork Star Tree. Made with 100% natural wool felt and eco-friendly dyes. Beautifully crafted Patchwork Star Tree. Made with 100% natural wool felt and eco-friendly dyes. Beautifully crafted Patchwork Star Tree. Made with 100% natural wool felt and eco-friendly dyes. Beautifully crafted Patchwork Star Tree. Made with 100% natural wool felt and eco-friendly dyes. Beautifully crafted Patchwork Star Tree. Made with 100% natural wool felt and eco-friendly dyes. Beautifully crafted Patchwork Star Tree. Made with 100% natural wool felt and eco-friendly dyes. Beautifully crafted Patchwork Star Tree.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample",
+        "cld-sample",
+        "cld-sample"
+      ],
+      "colors": [
+        "bg-sage",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 4.5,
+        "tier5k": 3.8249999999999997,
+        "tier10k": 3.375
+      },
+      "currency": "INR"
+    },
+    {
+      "id": "tree-nordic",
+      "name": "Nordic Dot Tree",
+      "image": "cld-sample",
+      "color": "bg-forest",
+      "price": 4.5,
+      "subtitle": "Tabletop pieces that bring colour and a soft sculptural presence to festive styling.",
+      "description": "Beautifully crafted Nordic Dot Tree. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample",
+        "cld-sample",
+        "cld-sample"
+      ],
+      "colors": [
+        "bg-forest",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 4.5,
+        "tier5k": 3.8249999999999997,
+        "tier10k": 3.375
+      }
+    },
+    {
+      "id": "tree-scalloped",
+      "name": "Scalloped Pine Tree",
+      "image": "cld-sample",
+      "color": "bg-crimson",
+      "price": 4.5,
+      "subtitle": "Tabletop pieces that bring colour and a soft sculptural presence to festive styling.",
+      "description": "Beautifully crafted Scalloped Pine Tree. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample",
+        "cld-sample",
+        "cld-sample"
+      ],
+      "colors": [
+        "bg-crimson",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 4.5,
+        "tier5k": 3.8249999999999997,
+        "tier10k": 3.375
+      }
+    },
+    {
+      "id": "tree-petal",
+      "name": "Petal Layer Tree",
+      "image": "cld-sample",
+      "color": "bg-sand",
+      "price": 4.5,
+      "subtitle": "Tabletop pieces that bring colour and a soft sculptural presence to festive styling.",
+      "description": "Beautifully crafted Petal Layer Tree. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample",
+        "cld-sample",
+        "cld-sample"
+      ],
+      "colors": [
+        "bg-sand",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 4.5,
+        "tier5k": 3.8249999999999997,
+        "tier10k": 3.375
+      }
+    },
+    {
+      "id": "stocking-mistletoe",
+      "name": "Mistletoe Berry Stocking",
+      "image": "cld-sample-2",
+      "color": "bg-crimson",
+      "price": 6,
+      "subtitle": "Statement stockings with appliqué, embroidery and hand-finished edges.",
+      "description": "Beautifully crafted Mistletoe Berry Stocking. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-2",
+        "cld-sample-2",
+        "cld-sample-2"
+      ],
+      "colors": [
+        "bg-crimson",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 6,
+        "tier5k": 5.1,
+        "tier10k": 4.5
+      }
+    },
+    {
+      "id": "stocking-ornament",
+      "name": "Ornament Appliqué Stocking",
+      "image": "cld-sample-2",
+      "color": "bg-sage",
+      "price": 6,
+      "subtitle": "Statement stockings with appliqué, embroidery and hand-finished edges.",
+      "description": "Beautifully crafted Ornament Appliqué Stocking. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-2",
+        "cld-sample-2",
+        "cld-sample-2"
+      ],
+      "colors": [
+        "bg-sage",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 6,
+        "tier5k": 5.1,
+        "tier10k": 4.5
+      }
+    },
+    {
+      "id": "stocking-classic",
+      "name": "Classic Red Stocking",
+      "image": "cld-sample-2",
+      "color": "bg-sand",
+      "price": 6,
+      "subtitle": "Statement stockings with appliqué, embroidery and hand-finished edges.",
+      "description": "Beautifully crafted Classic Red Stocking. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-2",
+        "cld-sample-2",
+        "cld-sample-2"
+      ],
+      "colors": [
+        "bg-sand",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 6,
+        "tier5k": 5.1,
+        "tier10k": 4.5
+      }
+    },
+    {
+      "id": "stocking-star",
+      "name": "Star Stitched Stocking",
+      "image": "cld-sample-2",
+      "color": "bg-forest",
+      "price": 6,
+      "subtitle": "Statement stockings with appliqué, embroidery and hand-finished edges.",
+      "description": "Beautifully crafted Star Stitched Stocking. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-2",
+        "cld-sample-2",
+        "cld-sample-2"
+      ],
+      "colors": [
+        "bg-forest",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 6,
+        "tier5k": 5.1,
+        "tier10k": 4.5
+      }
+    },
+    {
+      "id": "wreath-forest",
+      "name": "Forest Felt Wreath",
+      "image": "cld-sample-3",
+      "color": "bg-forest",
+      "price": 8.5,
+      "desc": "Textured loop wreath with red and ivory berries",
+      "subtitle": "Soft, reusable greenery for doors, windows, shelves and installations.",
+      "description": "Beautifully crafted Forest Felt Wreath. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-3",
+        "cld-sample-3",
+        "cld-sample-3"
+      ],
+      "colors": [
+        "bg-forest",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 8.5,
+        "tier5k": 7.225,
+        "tier10k": 6.375
+      }
+    },
+    {
+      "id": "mistletoe-hanging",
+      "name": "Mistletoe Hanging",
+      "image": "cld-sample-3",
+      "color": "bg-sage",
+      "price": 4,
+      "desc": "Layered leaves with hand-rolled felt berries",
+      "subtitle": "Soft, reusable greenery for doors, windows, shelves and installations.",
+      "description": "Beautifully crafted Mistletoe Hanging. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-3",
+        "cld-sample-3",
+        "cld-sample-3"
+      ],
+      "colors": [
+        "bg-sage",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 4,
+        "tier5k": 3.4,
+        "tier10k": 3
+      }
+    },
+    {
+      "id": "mistletoe-bundle",
+      "name": "Mistletoe Bundle",
+      "image": "cld-sample-3",
+      "color": "bg-sand",
+      "price": 5.5,
+      "desc": "Dimensional foliage finished with a festive red bow",
+      "subtitle": "Soft, reusable greenery for doors, windows, shelves and installations.",
+      "description": "Beautifully crafted Mistletoe Bundle. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-3",
+        "cld-sample-3",
+        "cld-sample-3"
+      ],
+      "colors": [
+        "bg-sand",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 5.5,
+        "tier5k": 4.675,
+        "tier10k": 4.125
+      }
+    },
+    {
+      "id": "garland-berry",
+      "name": "Festive Berry Garland",
+      "image": "cld-sample-3",
+      "color": "bg-crimson",
+      "price": 7.5,
+      "desc": "Flexible garland in a joyful multicolour palette",
+      "subtitle": "Soft, reusable greenery for doors, windows, shelves and installations.",
+      "description": "Beautifully crafted Festive Berry Garland. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-3",
+        "cld-sample-3",
+        "cld-sample-3"
+      ],
+      "colors": [
+        "bg-crimson",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 7.5,
+        "tier5k": 6.375,
+        "tier10k": 5.625
+      }
+    },
+    {
+      "id": "advent-village",
+      "name": "Village Advent Calendar",
+      "image": "cld-sample-2",
+      "color": "bg-sand",
+      "price": 12,
+      "subtitle": "Twenty-five tactile pockets turn the Christmas countdown into a family ritual.",
+      "description": "Beautifully crafted Village Advent Calendar. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-2",
+        "cld-sample-2",
+        "cld-sample-2"
+      ],
+      "colors": [
+        "bg-sand",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 12,
+        "tier5k": 10.2,
+        "tier10k": 9
+      }
+    },
+    {
+      "id": "advent-evergreen",
+      "name": "Evergreen Advent Calendar",
+      "image": "cld-sample-2",
+      "color": "bg-sage",
+      "price": 12,
+      "subtitle": "Twenty-five tactile pockets turn the Christmas countdown into a family ritual.",
+      "description": "Beautifully crafted Evergreen Advent Calendar. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-2",
+        "cld-sample-2",
+        "cld-sample-2"
+      ],
+      "colors": [
+        "bg-sage",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 12,
+        "tier5k": 10.2,
+        "tier10k": 9
+      }
+    },
+    {
+      "id": "advent-star",
+      "name": "Star Countdown",
+      "image": "cld-sample-2",
+      "color": "bg-crimson",
+      "price": 10,
+      "subtitle": "Twenty-five tactile pockets turn the Christmas countdown into a family ritual.",
+      "description": "Beautifully crafted Star Countdown. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-2",
+        "cld-sample-2",
+        "cld-sample-2"
+      ],
+      "colors": [
+        "bg-crimson",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 10,
+        "tier5k": 8.5,
+        "tier10k": 7.5
+      }
+    },
+    {
+      "id": "advent-pocket",
+      "name": "Pocket Calendar",
+      "image": "cld-sample-2",
+      "color": "bg-forest",
+      "price": 10,
+      "subtitle": "Twenty-five tactile pockets turn the Christmas countdown into a family ritual.",
+      "description": "Beautifully crafted Pocket Calendar. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-2",
+        "cld-sample-2",
+        "cld-sample-2"
+      ],
+      "colors": [
+        "bg-forest",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 10,
+        "tier5k": 8.5,
+        "tier10k": 7.5
+      }
+    },
+    {
+      "id": "ornament-elephant",
+      "name": "Festival Elephant",
+      "image": "cld-sample-4",
+      "color": "bg-crimson",
+      "price": 2.5,
+      "subtitle": "Playful, tactile characters for trees, nursery décor, and gifting.",
+      "description": "Beautifully crafted Festival Elephant. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-4",
+        "cld-sample-4",
+        "cld-sample-4"
+      ],
+      "colors": [
+        "bg-crimson",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 2.5,
+        "tier5k": 2.125,
+        "tier10k": 1.875
+      }
+    },
+    {
+      "id": "ornament-dog",
+      "name": "Spotty Dog",
+      "image": "cld-sample-4",
+      "color": "bg-sand",
+      "price": 2.5,
+      "subtitle": "Playful, tactile characters for trees, nursery décor, and gifting.",
+      "description": "Beautifully crafted Spotty Dog. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-4",
+        "cld-sample-4",
+        "cld-sample-4"
+      ],
+      "colors": [
+        "bg-sand",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 2.5,
+        "tier5k": 2.125,
+        "tier10k": 1.875
+      }
+    },
+    {
+      "id": "ornament-owl",
+      "name": "Wide-Eyed Owl",
+      "image": "cld-sample-4",
+      "color": "bg-sage",
+      "price": 2.5,
+      "subtitle": "Playful, tactile characters for trees, nursery décor, and gifting.",
+      "description": "Beautifully crafted Wide-Eyed Owl. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-4",
+        "cld-sample-4",
+        "cld-sample-4"
+      ],
+      "colors": [
+        "bg-sage",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 2.5,
+        "tier5k": 2.125,
+        "tier10k": 1.875
+      }
+    },
+    {
+      "id": "ornament-fox",
+      "name": "Scarf Fox",
+      "image": "cld-sample-4",
+      "color": "bg-forest",
+      "price": 2.5,
+      "subtitle": "Playful, tactile characters for trees, nursery décor, and gifting.",
+      "description": "Beautifully crafted Scarf Fox. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-4",
+        "cld-sample-4",
+        "cld-sample-4"
+      ],
+      "colors": [
+        "bg-forest",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 2.5,
+        "tier5k": 2.125,
+        "tier10k": 1.875
+      }
+    },
+    {
+      "id": "decor-cactus-bead",
+      "name": "Beaded Cactus",
+      "image": "cld-sample",
+      "color": "bg-sage",
+      "price": 3.5,
+      "subtitle": "Graphic silhouettes and bright embroidery add personality beyond the traditional.",
+      "description": "Beautifully crafted Beaded Cactus. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample",
+        "cld-sample",
+        "cld-sample"
+      ],
+      "colors": [
+        "bg-sage",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 3.5,
+        "tier5k": 2.975,
+        "tier10k": 2.625
+      }
+    },
+    {
+      "id": "decor-cactus-stitch",
+      "name": "Stitched Cactus",
+      "image": "cld-sample",
+      "color": "bg-forest",
+      "price": 3.5,
+      "subtitle": "Graphic silhouettes and bright embroidery add personality beyond the traditional.",
+      "description": "Beautifully crafted Stitched Cactus. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample",
+        "cld-sample",
+        "cld-sample"
+      ],
+      "colors": [
+        "bg-forest",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 3.5,
+        "tier5k": 2.975,
+        "tier10k": 2.625
+      }
+    },
+    {
+      "id": "decor-strawberry",
+      "name": "Pearl Strawberry",
+      "image": "cld-sample-4",
+      "color": "bg-crimson",
+      "price": 3,
+      "subtitle": "Graphic silhouettes and bright embroidery add personality beyond the traditional.",
+      "description": "Beautifully crafted Pearl Strawberry. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-4",
+        "cld-sample-4",
+        "cld-sample-4"
+      ],
+      "colors": [
+        "bg-crimson",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 3,
+        "tier5k": 2.55,
+        "tier10k": 2.25
+      }
+    },
+    {
+      "id": "decor-star",
+      "name": "Graphic Star",
+      "image": "cld-sample-4",
+      "color": "bg-sand",
+      "price": 3,
+      "subtitle": "Graphic silhouettes and bright embroidery add personality beyond the traditional.",
+      "description": "Beautifully crafted Graphic Star. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-4",
+        "cld-sample-4",
+        "cld-sample-4"
+      ],
+      "colors": [
+        "bg-sand",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 3,
+        "tier5k": 2.55,
+        "tier10k": 2.25
+      }
+    },
+    {
+      "id": "key-bear",
+      "name": "Festive Bear",
+      "image": "cld-sample-4",
+      "color": "bg-forest",
+      "price": 1.5,
+      "subtitle": "Characterful bag charms and key companions—lightweight and giftable.",
+      "description": "Beautifully crafted Festive Bear. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-4",
+        "cld-sample-4",
+        "cld-sample-4"
+      ],
+      "colors": [
+        "bg-forest",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 1.5,
+        "tier5k": 1.275,
+        "tier10k": 1.125
+      }
+    },
+    {
+      "id": "key-hedgehog",
+      "name": "Little Hedgehog",
+      "image": "cld-sample-4",
+      "color": "bg-sand",
+      "price": 1.5,
+      "subtitle": "Characterful bag charms and key companions—lightweight and giftable.",
+      "description": "Beautifully crafted Little Hedgehog. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-4",
+        "cld-sample-4",
+        "cld-sample-4"
+      ],
+      "colors": [
+        "bg-sand",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 1.5,
+        "tier5k": 1.275,
+        "tier10k": 1.125
+      }
+    },
+    {
+      "id": "key-polar",
+      "name": "Polar Bear",
+      "image": "cld-sample-4",
+      "color": "bg-sage",
+      "price": 1.5,
+      "subtitle": "Characterful bag charms and key companions—lightweight and giftable.",
+      "description": "Beautifully crafted Polar Bear. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-4",
+        "cld-sample-4",
+        "cld-sample-4"
+      ],
+      "colors": [
+        "bg-sage",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 1.5,
+        "tier5k": 1.275,
+        "tier10k": 1.125
+      }
+    },
+    {
+      "id": "key-bird",
+      "name": "Folk Bird",
+      "image": "cld-sample-4",
+      "color": "bg-crimson",
+      "price": 1.5,
+      "subtitle": "Characterful bag charms and key companions—lightweight and giftable.",
+      "description": "Beautifully crafted Folk Bird. Made with 100% natural wool felt and eco-friendly dyes.",
+      "specs": [
+        "100% Wool Felt",
+        "Hand-stitched details",
+        "Eco-friendly dyes"
+      ],
+      "images": [
+        "cld-sample-4",
+        "cld-sample-4",
+        "cld-sample-4"
+      ],
+      "colors": [
+        "bg-crimson",
+        "bg-sage",
+        "bg-sand"
+      ],
+      "pricing": {
+        "base": 1.5,
+        "tier5k": 1.275,
+        "tier10k": 1.125
+      }
+    }
+  ]
+}
