@@ -149,7 +149,7 @@ function Home() {
         <div className="container promo-content">
           <h2>Bespoke Christmas Collections</h2>
           <p>Looking for something unique? Discover our custom development options for private-label programmes.</p>
-          <a href="#contact" className="btn btn-outline" style={{ borderColor: 'white', color: 'white' }}>Learn More</a>
+          <Link to="/contact" className="btn btn-outline" style={{ borderColor: 'white', color: 'white' }}>Learn More</Link>
         </div>
       </section>
 
