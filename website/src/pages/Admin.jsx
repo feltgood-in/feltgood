@@ -30,6 +30,8 @@ function Admin() {
   const [categories, setCategories] = useState([]);
   const [messages, setMessages] = useState([]);
   const [expandedMessageId, setExpandedMessageId] = useState(null);
+  const [messageToDelete, setMessageToDelete] = useState(null);
+  const [productToDelete, setProductToDelete] = useState(null);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [uploadingImage, setUploadingImage] = useState(null);
@@ -232,13 +234,19 @@ function Admin() {
   };
 
   const handleSaveProduct = async () => {
-    if (products.length === 0) {
+    if (products.length === 0 && !editingProduct?.id?.startsWith('new-item-')) {
       alert("Please wait for products to finish loading before saving.");
       return;
     }
     setLoading(true);
     try {
-      const updatedProducts = products.map(p => p.id === editingProduct.id ? editingProduct : p);
+      const isNew = !products.find(p => p.id === editingProduct.id);
+      let updatedProducts;
+      if (isNew) {
+        updatedProducts = [editingProduct, ...products]; // Add to top
+      } else {
+        updatedProducts = products.map(p => p.id === editingProduct.id ? editingProduct : p);
+      }
       setProducts(updatedProducts);
       
       const res = await fetch('/api/products', {
@@ -260,12 +268,62 @@ function Admin() {
     }
   };
 
+  const handleCreateNewProduct = () => {
+    const newProduct = {
+      id: `new-item-${Date.now()}`,
+      itemNumber: '',
+      name: '',
+      subtitle: '',
+      badgeText: '',
+      description: '',
+      price: 0,
+      currency: 'USD',
+      categoryId: categories.length > 0 ? categories[0].id : '',
+      image: '',
+      images: [],
+      pricing: { base: 0, tier5k: 0, tier10k: 0 }
+    };
+    setEditingProduct(newProduct);
+  };
+
+  const handleDeleteProduct = async (id) => {
+    try {
+      const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        setProducts(products.filter(p => p._id !== id));
+        setProductToDelete(null);
+        setEditingProduct(null);
+        setSuccessMessage('Product deleted successfully!');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      } else {
+        const errorData = await res.json();
+        alert('Failed to delete product: ' + errorData.message);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete product');
+    }
+  };
+
+  const handleViewMessage = async (msg) => {
+    setExpandedMessageId(msg._id);
+    if (!msg.read) {
+      // Optimistic UI update
+      setMessages(prev => prev.map(m => m._id === msg._id ? { ...m, read: true } : m));
+      try {
+        await fetch(`/api/messages/${msg._id}/read`, { method: 'PUT' });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
   const handleDeleteMessage = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this message?")) return;
     try {
       const res = await fetch(`/api/messages/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setMessages(messages.filter(m => m._id !== id));
+        setMessageToDelete(null);
       }
     } catch (err) {
       console.error(err);
@@ -352,6 +410,8 @@ function Admin() {
     );
   }
 
+  const unreadMessagesCount = messages.filter(m => !m.read).length;
+
   return (
     <div style={{ display: 'flex', minHeight: '80vh', borderTop: '1px solid var(--color-sand)' }}>
       {/* Sidebar */}
@@ -388,9 +448,14 @@ function Admin() {
           <li>
             <button 
               onClick={() => setActiveTab('messages')} 
-              style={{ width: '100%', textAlign: 'left', padding: '0.8rem', background: activeTab === 'messages' ? 'white' : 'transparent', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: activeTab === 'messages' ? 'bold' : 'normal' }}
+              style={{ width: '100%', textAlign: 'left', padding: '0.8rem', background: activeTab === 'messages' ? 'white' : 'transparent', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: activeTab === 'messages' ? 'bold' : 'normal', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
             >
-              Messages
+              <span>Messages</span>
+              {unreadMessagesCount > 0 && (
+                <span style={{ background: '#d93025', color: 'white', borderRadius: '50%', padding: '0.1rem 0.4rem', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                  {unreadMessagesCount}
+                </span>
+              )}
             </button>
           </li>
         </ul>
@@ -735,6 +800,15 @@ function Admin() {
                     <h2 style={{ margin: 0 }}>Edit Product: {editingProduct.name}</h2>
                   </div>
                   <div style={{ display: 'flex', gap: '1rem' }}>
+                    {!editingProduct?.id?.startsWith('new-item-') && (
+                      <button 
+                        onClick={() => setProductToDelete(editingProduct._id)} 
+                        className="btn btn-outline" 
+                        style={{ padding: '0.4rem 1rem', color: '#d93025', borderColor: '#fce8e6', background: '#fff9f9' }}
+                      >
+                        Delete
+                      </button>
+                    )}
                     {JSON.stringify(products.find(p => p.id === editingProduct.id)) !== JSON.stringify(editingProduct) && (
                       <>
                         <button onClick={() => setEditingProduct(null)} className="btn btn-outline" style={{ padding: '0.4rem 1rem' }}>
@@ -882,9 +956,14 @@ function Admin() {
                   {successMessage}
                 </div>
               )}
-              <div style={{ position: 'sticky', top: 0, background: '#faf9f6', paddingTop: successMessage ? '1.5rem' : '3rem', paddingBottom: '1.5rem', zIndex: 10, margin: '0 -3rem 2rem -3rem', paddingLeft: '3rem', paddingRight: '3rem' }}>
-                <h1 style={{ marginBottom: '0.5rem', marginTop: 0 }}>Manage Products</h1>
-                <p style={{ margin: 0, color: '#666' }}>Edit items, prices, and upload images.</p>
+              <div style={{ position: 'sticky', top: 0, background: '#faf9f6', paddingTop: successMessage ? '1.5rem' : '3rem', paddingBottom: '1.5rem', zIndex: 10, margin: '0 -3rem 2rem -3rem', paddingLeft: '3rem', paddingRight: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div>
+                  <h1 style={{ marginBottom: '0.5rem', marginTop: 0 }}>Manage Products</h1>
+                  <p style={{ margin: 0, color: '#666' }}>Edit items, prices, and upload images.</p>
+                </div>
+                <button onClick={handleCreateNewProduct} className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', marginTop: '0.5rem' }}>
+                  + New Product
+                </button>
               </div>
               <div style={{ background: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
                 <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -963,13 +1042,17 @@ function Admin() {
                   </thead>
                   <tbody>
                     {messages.map(msg => (
-                      <tr key={msg._id} style={{ borderBottom: '1px solid #eaeaea', background: expandedMessageId === msg._id ? '#fafafa' : 'white' }}>
+                      <tr 
+                        key={msg._id} 
+                        onClick={() => handleViewMessage(msg)}
+                        style={{ borderBottom: '1px solid #eaeaea', background: expandedMessageId === msg._id ? '#fafafa' : 'white', fontWeight: msg.read ? 'normal' : 'bold', cursor: 'pointer' }}
+                      >
                         <td style={{ padding: '1rem', color: '#666', fontSize: '0.85rem' }}>
                           {new Date(msg.createdAt).toLocaleString()}
                         </td>
                         <td style={{ padding: '1rem' }}>
-                          <div style={{ fontWeight: 'bold', color: '#333' }}>{msg.name}</div>
-                          <div style={{ color: '#666', fontSize: '0.85rem', wordBreak: 'break-all' }}>{msg.email}</div>
+                          <div style={{ fontWeight: 'inherit', color: '#333' }}>{msg.name}</div>
+                          <div style={{ color: '#666', fontSize: '0.85rem', wordBreak: 'break-all', fontWeight: 'normal' }}>{msg.email}</div>
                         </td>
                         <td style={{ padding: '1rem' }}>
                           <span style={{ 
@@ -984,21 +1067,17 @@ function Admin() {
                           </span>
                         </td>
                         <td style={{ padding: '1rem', maxWidth: '300px' }}>
-                          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: '#555', fontSize: '0.9rem' }}>
+                          <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: msg.read ? '#555' : '#000', fontSize: '0.9rem' }}>
                             {msg.message || 'No message provided...'}
                           </div>
                         </td>
                         <td style={{ padding: '1rem', textAlign: 'right' }}>
                           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
                             <button 
-                              onClick={() => setExpandedMessageId(msg._id)}
-                              className="btn"
-                              style={{ padding: '0.4rem 1rem', fontSize: '0.85rem' }}
-                            >
-                              View
-                            </button>
-                            <button 
-                              onClick={() => handleDeleteMessage(msg._id)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setMessageToDelete(msg._id);
+                              }}
                               className="btn btn-outline"
                               style={{ padding: '0.4rem 1rem', fontSize: '0.85rem', color: '#d93025', borderColor: '#fce8e6', background: '#fff9f9' }}
                             >
@@ -1029,25 +1108,26 @@ function Admin() {
                     const msg = messages.find(m => m._id === expandedMessageId);
                     return (
                       <>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
-                          <div>
-                            <h2 style={{ margin: '0 0 0.5rem 0' }}>{msg.name}</h2>
-                            <div style={{ color: '#666' }}>{msg.email} • {msg.mobile || 'No Phone'}</div>
-                          </div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+                          <h2 style={{ margin: 0 }}>Message Details</h2>
                           <button onClick={() => setExpandedMessageId(null)} className="btn btn-outline" style={{ padding: '0.4rem 0.8rem' }}>Close</button>
                         </div>
 
-                        <div style={{ display: 'flex', gap: '2rem', marginBottom: '1.5rem', padding: '1rem', background: '#f5f5f5', borderRadius: '8px' }}>
-                          <div>
-                            <strong style={{ display: 'block', color: '#666', fontSize: '0.85rem' }}>Source</strong>
-                            <div>{msg.source === 'item_list' ? 'Inquiry List' : 'Contact Form'}</div>
-                          </div>
-                          <div>
-                            <strong style={{ display: 'block', color: '#666', fontSize: '0.85rem' }}>Volume</strong>
+                        <div style={{ background: '#f5f5f5', padding: '1.5rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+                          <div style={{ display: 'grid', gridTemplateColumns: '150px 1fr', gap: '0.8rem', alignItems: 'center' }}>
+                            <strong style={{ color: '#666' }}>Sender:</strong>
+                            <div>{msg.name}</div>
+                            
+                            <strong style={{ color: '#666' }}>Email:</strong>
+                            <div>{msg.email}</div>
+                            
+                            <strong style={{ color: '#666' }}>Contact:</strong>
+                            <div>{msg.mobile || 'N/A'}</div>
+
+                            <strong style={{ color: '#666' }}>Volume/Order Qty:</strong>
                             <div>{msg.quantity || 'N/A'}</div>
-                          </div>
-                          <div>
-                            <strong style={{ display: 'block', color: '#666', fontSize: '0.85rem' }}>Date</strong>
+
+                            <strong style={{ color: '#666' }}>Date:</strong>
                             <div>{new Date(msg.createdAt).toLocaleString()}</div>
                           </div>
                         </div>
@@ -1264,6 +1344,72 @@ function Admin() {
 
             <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={() => setSelectingProductFor(null)} className="btn btn-outline" style={{ padding: '0.5rem 2rem' }}>Cancel</button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+      {/* DELETE MESSAGE CONFIRMATION MODAL */}
+      {messageToDelete && createPortal(
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
+          backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 1100, 
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem'
+        }}>
+          <div style={{
+            background: 'white', borderRadius: '12px', padding: '2rem', 
+            width: '100%', maxWidth: '400px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+          }}>
+            <h3 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--color-primary)' }}>Confirm Deletion</h3>
+            <p style={{ marginBottom: '2rem', color: '#666' }}>Are you sure you want to delete this message? This action cannot be undone.</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+              <button 
+                onClick={() => setMessageToDelete(null)} 
+                className="btn btn-outline" 
+                style={{ padding: '0.6rem 1.5rem' }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => handleDeleteMessage(messageToDelete)} 
+                className="btn btn-primary" 
+                style={{ padding: '0.6rem 1.5rem', background: '#d93025', borderColor: '#d93025' }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+      {/* DELETE PRODUCT CONFIRMATION MODAL */}
+      {productToDelete && createPortal(
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
+          backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 1100, 
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem'
+        }}>
+          <div style={{
+            background: 'white', borderRadius: '12px', padding: '2rem', 
+            width: '100%', maxWidth: '400px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+          }}>
+            <h3 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--color-primary)' }}>Confirm Product Deletion</h3>
+            <p style={{ marginBottom: '2rem', color: '#666' }}>Are you sure you want to delete this product? This action cannot be undone.</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+              <button 
+                onClick={() => setProductToDelete(null)} 
+                className="btn btn-outline" 
+                style={{ padding: '0.6rem 1.5rem' }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => handleDeleteProduct(productToDelete)} 
+                className="btn btn-primary" 
+                style={{ padding: '0.6rem 1.5rem', background: '#d93025', borderColor: '#d93025' }}
+              >
+                Delete
+              </button>
             </div>
           </div>
         </div>,

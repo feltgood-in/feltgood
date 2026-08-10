@@ -220,6 +220,37 @@ app.put('/api/products', async (req, res) => {
   }
 });
 
+app.delete('/api/products/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    // Delete images from Cloudinary
+    if (product.image) {
+      await cloudinary.uploader.destroy(product.image).catch(err => console.error('Cloudinary delete error:', err));
+    }
+    if (product.images && product.images.length > 0) {
+      for (const img of product.images) {
+        if (img && img !== product.image) {
+          await cloudinary.uploader.destroy(img).catch(err => console.error('Cloudinary delete error:', err));
+        }
+      }
+    }
+
+    // Delete from MongoDB
+    await Product.findByIdAndDelete(req.params.id);
+    
+    productCache = null; // Invalidate cache
+    
+    res.json({ success: true, message: "Product deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error deleting product" });
+  }
+});
+
 // Messages Routes
 app.get('/api/messages', async (req, res) => {
   try {
@@ -227,6 +258,15 @@ app.get('/api/messages', async (req, res) => {
     res.json(messages);
   } catch (error) {
     res.status(500).json({ message: "Error fetching messages" });
+  }
+});
+
+app.put('/api/messages/:id/read', async (req, res) => {
+  try {
+    await Message.findByIdAndUpdate(req.params.id, { read: true });
+    res.json({ success: true, message: "Message marked as read" });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating message" });
   }
 });
 
