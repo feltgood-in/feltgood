@@ -10,6 +10,7 @@ function Collections() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [viewMode, setViewMode] = useState('3');
 
   useEffect(() => {
     fetch('/api/products')
@@ -44,14 +45,25 @@ function Collections() {
       
       {/* Top Bar matching image */}
       <div className="collections-top-bar">
-        <div></div>
-        <div className="view-toggles hide-on-mobile">
-          <span style={{opacity: 0.5, cursor: 'pointer'}}>☷</span>
-          <span style={{opacity: 0.5, cursor: 'pointer', margin: '0 10px'}}>⋮⋮</span>
-          <span style={{color: 'var(--color-primary)', cursor: 'pointer'}}>⠿</span>
+        <div className="view-toggles hide-on-mobile" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill={viewMode === '2' ? "var(--color-primary)" : "#ccc"} style={{ cursor: 'pointer', transition: 'fill 0.2s' }} onClick={() => setViewMode('2')}>
+            <rect x="2" y="4" width="8" height="16" rx="1"/>
+            <rect x="14" y="4" width="8" height="16" rx="1"/>
+          </svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill={viewMode === '3' ? "var(--color-primary)" : "#ccc"} style={{ cursor: 'pointer', transition: 'fill 0.2s' }} onClick={() => setViewMode('3')}>
+            <rect x="2" y="4" width="5.3" height="16" rx="1"/>
+            <rect x="9.3" y="4" width="5.3" height="16" rx="1"/>
+            <rect x="16.6" y="4" width="5.3" height="16" rx="1"/>
+          </svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill={viewMode === '4' ? "var(--color-primary)" : "#ccc"} style={{ cursor: 'pointer', transition: 'fill 0.2s' }} onClick={() => setViewMode('4')}>
+            <rect x="1" y="4" width="4" height="16" rx="1"/>
+            <rect x="7" y="4" width="4" height="16" rx="1"/>
+            <rect x="13" y="4" width="4" height="16" rx="1"/>
+            <rect x="19" y="4" width="4" height="16" rx="1"/>
+          </svg>
         </div>
+        <div></div>
         <select className="sort-dropdown">
-          <option>Date, new to old</option>
           <option>Price, low to high</option>
           <option>Price, high to low</option>
         </select>
@@ -103,10 +115,10 @@ function Collections() {
         </aside>
 
         {/* Product Grid */}
-        <div className="collections-product-grid">
+        <div className={`collections-product-grid grid-${viewMode}`}>
           {displayedProducts.map(product => (
             <Link to={`/product/${product.id}`} key={product.id} className="card product-card-filter">
-              <div className={`card-image ${product.color}`} style={{ height: '240px', position: 'relative' }}>
+              <div className={`card-image ${product.color}`} style={{ aspectRatio: '1 / 1', height: 'auto', position: 'relative' }}>
                 <AdvancedImage 
                   cldImg={cld.image(product.image).resize(fill().width(300).height(300))} 
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}

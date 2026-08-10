@@ -24,9 +24,18 @@ function Navbar() {
     }
   };
 
+  const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+
   return (
     <nav className="navbar">
       <div className="container nav-content">
+        <button className="mobile-menu-btn hide-on-desktop" onClick={() => setIsMenuOpen(true)}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
         <Link to="/" className="logo-container">
           <img src="/feltgood.svg" alt="Felt Good Logo" className="logo-icon" />
           <div className="brand-text-wrapper">
@@ -36,7 +45,8 @@ function Navbar() {
             </span>
           </div>
         </Link>
-        <div className="nav-links">
+        {isMenuOpen && <div className="mobile-overlay hide-on-desktop" onClick={() => setIsMenuOpen(false)}></div>}
+        <div className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
           <form className="search-form" onSubmit={handleSearch}>
             <input 
               type="text" 
@@ -52,16 +62,19 @@ function Navbar() {
               </svg>
             </button>
           </form>
-          <Link to="/collections">Collections</Link>
-          <Link to="/item-list" className="nav-icon-link" style={{ position: 'relative', display: 'flex', alignItems: 'center', color: 'var(--color-primary)' }}>
+          <Link to="/" className="hide-on-desktop" onClick={() => setIsMenuOpen(false)}>Home</Link>
+          <Link to="/collections" onClick={() => setIsMenuOpen(false)}>Collections</Link>
+          <Link to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link>
+          <Link to="/item-list" className="nav-icon-link" style={{ position: 'relative', display: 'flex', alignItems: 'center', color: 'var(--color-primary)' }} onClick={() => setIsMenuOpen(false)}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
+            <span className="hide-on-desktop" style={{ marginLeft: '8px' }}>Inquiry List</span>
             {totalItems > 0 && (
               <span style={{
                 position: 'absolute',
                 top: '-8px',
-                right: '-10px',
+                left: '12px',
                 background: 'var(--color-secondary)',
                 color: '#fff',
                 borderRadius: '50%',
@@ -77,7 +90,6 @@ function Navbar() {
               </span>
             )}
           </Link>
-          <Link to="/contact" className="btn btn-outline" style={{padding: '0.5rem 1.5rem'}}>Contact</Link>
         </div>
       </div>
     </nav>

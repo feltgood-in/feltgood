@@ -52,14 +52,16 @@ function Contact() {
           {/* Left Decorative Side */}
           <div className="inquire-sidebar">
             <h1 className="section-title" style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>Let's Create Together</h1>
-            <p style={{ marginBottom: '3rem', opacity: 0.9 }}>
+            <p className="contact-intro-text" style={{ marginBottom: '3rem', opacity: 0.9 }}>
               Partner with Felt Good for premium, handmade seasonal decor. We offer tailored wholesale and private-label solutions.
             </p>
+            <div className="hide-on-mobile" style={{ aspectRatio: '1/1', width: '100%', maxWidth: '300px', margin: '0 auto', display: 'flex' }}>
               <AdvancedImage 
                 cldImg={cld.image('cld-sample-3').resize(fill().width(400).height(400))} 
                 style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%', border: '2px solid var(--color-bg)' }}
               />
-            <div style={{ marginTop: 'auto', paddingTop: '3rem' }}>
+            </div>
+            <div className="contact-info-container" style={{ marginTop: 'auto', paddingTop: '3rem' }}>
               <p><strong>Tel:</strong> +34 688 484 444</p>
               <p><strong>Email:</strong> feltgoodbcn@gmail.com</p>
             </div>

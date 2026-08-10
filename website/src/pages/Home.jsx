@@ -47,10 +47,52 @@ function Home() {
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches ? e.targetTouches[0].clientX : e.clientX);
+  };
+
+  const onTouchMove = (e) => setTouchEnd(e.targetTouches ? e.targetTouches[0].clientX : e.clientX);
+
+  const onTouchEndEvent = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) {
+      nextSlide();
+    } else if (isRightSwipe) {
+      prevSlide();
+    }
+    setTouchStart(null);
+    setTouchEnd(null);
+  };
+
   return (
     <>
       {/* Top Banner Carousel */}
-      <section className="banner-carousel">
+      <section 
+        className="banner-carousel"
+        onDragStart={(e) => e.preventDefault()}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEndEvent}
+        onMouseDown={onTouchStart}
+        onMouseMove={(e) => {
+          if (touchStart) onTouchMove(e);
+        }}
+        onMouseUp={onTouchEndEvent}
+        onMouseLeave={() => {
+          if (touchStart) {
+            onTouchEndEvent();
+          }
+        }}
+      >
         <div className="carousel-track" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
           {slides.map((slide) => (
             <div key={slide.id} className={`carousel-slide ${slide.color}`} style={{ padding: 0 }}>
