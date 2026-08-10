@@ -857,8 +857,8 @@
 }
 
 .promo-card {
-  width: calc(16.666% - 12px);
-  min-width: 200px;
+  width: calc(20% - 12px);
+  min-width: 240px;
   border-radius: 8px;
   display: flex;
   flex-direction: column;
