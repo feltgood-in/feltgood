@@ -181,11 +181,18 @@ app.put('/api/homepage', async (req, res) => {
   }
 });
 
+// In-memory cache for products to speed up storefront load times
+let productCache = null;
+
 app.get('/api/products', async (req, res) => {
   try {
+    if (productCache) {
+      return res.json(productCache);
+    }
     const categories = await Category.find();
     const products = await Product.find();
-    res.json({ categories, products });
+    productCache = { categories, products };
+    res.json(productCache);
   } catch (error) {
     res.status(500).json({ message: "Error fetching products" });
   }
@@ -204,6 +211,8 @@ app.put('/api/products', async (req, res) => {
       await Product.deleteMany({});
       if (products.length > 0) await Product.insertMany(products);
     }
+    
+    productCache = null; // Invalidate cache when admin updates products
     
     res.json({ success: true, message: "Products updated successfully" });
   } catch (error) {
