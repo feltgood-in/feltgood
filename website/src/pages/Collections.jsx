@@ -111,7 +111,7 @@ function Collections() {
                   cldImg={cld.image(product.image).resize(fill().width(300).height(300))} 
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
-                <div className="discount-badge">-50%</div>
+                {product.badgeText && <div className="discount-badge">{product.badgeText}</div>}
               </div>
               <div className="card-content" style={{ padding: '1rem' }}>
                 <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '0.2rem', fontFamily: 'monospace' }}>{product.itemNumber}</div>

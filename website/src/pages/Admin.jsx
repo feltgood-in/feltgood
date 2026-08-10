@@ -811,7 +811,7 @@ function Admin() {
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>
                       <div className="form-group">
                         <label>Currency</label>
                         <select value={editingProduct.currency || 'INR'} onChange={e => setEditingProduct({...editingProduct, currency: e.target.value})} className="form-control" style={{ padding: '0.6rem', border: '1px solid #ccc', borderRadius: '4px' }}>
@@ -822,6 +822,10 @@ function Admin() {
                       <div className="form-group">
                         <label>Subtitle / Short Label</label>
                         <input type="text" value={editingProduct.subtitle || ''} onChange={e => setEditingProduct({...editingProduct, subtitle: e.target.value})} className="form-control" />
+                      </div>
+                      <div className="form-group">
+                        <label>Badge Text</label>
+                        <input type="text" value={editingProduct.badgeText || ''} onChange={e => setEditingProduct({...editingProduct, badgeText: e.target.value})} className="form-control" placeholder="-50%" />
                       </div>
                     </div>
 

@@ -36,10 +36,13 @@ function Home() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
+      setCurrentSlide((prev) => {
+        if (!slides || slides.length === 0) return 0;
+        return (prev + 1) % slides.length;
+      });
     }, 5000);
     return () => clearInterval(timer);
-  }, [slides.length]);
+  }, [slides]);
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
@@ -110,7 +113,10 @@ function Home() {
           const featuredIds = homepageData.categoryFeaturedItems?.[category.id] || [];
           if (featuredIds.length === 0) return null; // Hide category if no products selected
 
-          const displayProducts = category.products.filter(p => featuredIds.includes(p.id));
+          const displayProducts = featuredIds
+            .map(id => products.find(p => p.id === id))
+            .filter(Boolean); // removes undefined if a product was deleted
+            
           // Shuffle the products randomly
           const shuffledProducts = [...displayProducts].sort(() => 0.5 - Math.random());
 
@@ -121,19 +127,18 @@ function Home() {
               
               <div className="grid">
                 {shuffledProducts.map((product) => {
-                  const fullProduct = products.find(p => p.id === product.id);
                   return (
                   <Link to={`/product/${product.id}`} key={product.id} className="card">
-                    <div className={`card-image ${product.color}`}>
+                    <div className={`card-image ${product.color || 'bg-sand'}`}>
                       <AdvancedImage 
                         cldImg={cld.image(product.image).resize(fill().width(400).height(400))} 
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
                     </div>
                     <div className="card-content">
-                      <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '0.2rem', fontFamily: 'monospace' }}>{fullProduct?.itemNumber}</div>
+                      <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '0.2rem', fontFamily: 'monospace' }}>{product.itemNumber}</div>
                       <h3 style={{ fontSize: '1.25rem' }}>{product.name}</h3>
-                      <p>{fullProduct?.desc || 'Handmade felt decor designed for seasonal styling.'}</p>
+                      <p>{product.desc || 'Handmade felt decor designed for seasonal styling.'}</p>
                     </div>
                   </Link>
                   );
