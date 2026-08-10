@@ -27,14 +27,26 @@ function Search() {
     );
   });
 
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [quantity, setQuantity] = useState(100);
+
   const handleAddToCart = (e, product) => {
     e.preventDefault();
     e.stopPropagation();
-    addToInquiry(product, 1);
-    alert(`${product.name} added to your inquiry list!`);
+    setSelectedProduct(product);
+    setQuantity(100);
+  };
+
+  const confirmAddToCart = () => {
+    if (selectedProduct && quantity > 0) {
+      addToInquiry(selectedProduct, quantity);
+      alert(`${selectedProduct.name} (Qty: ${quantity}) added to your inquiry list!`);
+      setSelectedProduct(null);
+    }
   };
 
   return (
+    <>
     <div className="search-page container section animate-fade-in" style={{ paddingBottom: '6rem' }}>
       <div className="breadcrumb" style={{ marginBottom: '1rem' }}>
         <Link to="/">Home</Link> / <span>Search</span>
@@ -80,6 +92,30 @@ function Search() {
         </div>
       )}
     </div>
+
+      {selectedProduct && (
+        <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999999 }} onClick={() => setSelectedProduct(null)}>
+          <div className="modal-content" style={{ background: '#fff', padding: '2rem', borderRadius: '12px', width: '90%', maxWidth: '400px', margin: 'auto' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ marginBottom: '1rem', color: 'var(--color-primary)' }}>Add to Inquiry</h3>
+            <p style={{ marginBottom: '1.5rem', fontWeight: 'bold' }}>{selectedProduct.name}</p>
+            <div className="form-group" style={{ marginBottom: '2rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#666' }}>Expected Quantity</label>
+              <input 
+                type="number" 
+                min="1" 
+                value={quantity} 
+                onChange={e => setQuantity(parseInt(e.target.value) || 1)} 
+                style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', border: '1px solid #E5DED0' }}
+              />
+            </div>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+              <button className="btn btn-outline" style={{ padding: '0.5rem 1rem' }} onClick={() => setSelectedProduct(null)}>Cancel</button>
+              <button className="btn" style={{ padding: '0.5rem 1.5rem' }} onClick={confirmAddToCart}>Add</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

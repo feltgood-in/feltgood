@@ -1295,3 +1295,23 @@
     padding-top: 1rem !important;
   }
 }
+
+.mobile-filter-drawer {
+  position: fixed;
+  top: 0;
+  right: -320px;
+  width: 300px;
+  height: 100vh;
+  background: #fff;
+  z-index: 10000;
+  transition: right 0.3s ease;
+  box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+  padding: 2rem 1.5rem;
+  overflow-y: auto;
+}
+.mobile-filter-drawer.open {
+  right: 0;
+}
+@media (min-width: 768px) {
+  .mobile-filter-drawer { display: none; }
+}
