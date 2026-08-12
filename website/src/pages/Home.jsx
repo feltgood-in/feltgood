@@ -26,10 +26,10 @@ function Home() {
   }, []);
 
   const defaultSlides = [
-    { id: 1, color: "bg-forest", title: "New Festive Additions" },
-    { id: 2, color: "bg-crimson", title: "Classic Felt Stockings" },
-    { id: 3, color: "bg-sage", title: "Botanical Wreaths" },
-    { id: 4, color: "bg-sand", title: "Handmade Ornaments" }
+    { id: 1, color: "bg-slate", title: "Handcrafted New Arrivals" },
+    { id: 2, color: "bg-clay", title: "Artisanal Pottery" },
+    { id: 3, color: "bg-stone", title: "Handwoven Textiles" },
+    { id: 4, color: "bg-sand", title: "Woodcrafted Essentials" }
   ];
 
   const slides = homepageData ? homepageData.banners : defaultSlides;
@@ -119,13 +119,12 @@ function Home() {
       </section>
 
       {/* Brand Introduction (Moved Hero) */}
-      <section className="brand-intro text-center section container">
-        <p className="subtitle animate-fade-in delay-1" style={{color: 'var(--color-primary)'}}>HANDMADE WITH HEART</p>
-        <h1 className="title animate-fade-in delay-2" style={{fontSize: '4rem', marginBottom: '1.5rem'}}>Softly made. Joyfully kept.</h1>
+      <section className="brand-intro text-center section container handicraft-texture" style={{ borderRadius: '16px', margin: '2rem auto' }}>
+        <p className="subtitle animate-fade-in delay-1" style={{color: 'var(--color-primary)'}}>HANDCRAFTED WITH PASSION</p>
+        <h1 className="title animate-fade-in delay-2" style={{fontSize: '4rem', marginBottom: '1.5rem'}}>Designed for life.</h1>
         <p className="hero-text animate-fade-in delay-3" style={{margin: '0 auto'}}>
-          Handmade felt products designed for expressive retail collections, efficient packing, and buyer-led customisation.
+          Premium handmade products curated for modern living and expressive collections.
         </p>
-
       </section>
 
       {/* Promotional Cards Section (Hidden on Mobile) */}
@@ -183,7 +182,7 @@ function Home() {
                     <div className="card-content">
                       <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '0.2rem', fontFamily: 'monospace' }}>{product.itemNumber}</div>
                       <h3 style={{ fontSize: '1.25rem' }}>{product.name}</h3>
-                      <p>{product.desc || 'Handmade felt decor designed for seasonal styling.'}</p>
+                      <p>{product.desc || 'Premium handmade decor designed for elegant styling.'}</p>
                     </div>
                   </Link>
                   );
@@ -197,7 +196,7 @@ function Home() {
       {/* Promotional Banner */}
       <section className="promo-banner">
         <div className="container promo-content">
-          <h2>Bespoke Christmas Collections</h2>
+          <h2>Bespoke Artisanal Collections</h2>
           <p>Looking for something unique? Discover our custom development options for private-label programmes.</p>
           <Link to="/contact" className="btn btn-outline" style={{ borderColor: 'white', color: 'white' }}>Learn More</Link>
         </div>
@@ -209,10 +208,10 @@ function Home() {
           <div className="wholesale-grid">
             <div className="wholesale-info">
               <h2>Made for Thoughtful Retail</h2>
-              <p className="mb-2">A flexible collection for boutiques, department stores, museum shops, festive markets, and private-label programmes.</p>
+              <p className="mb-2">A flexible collection for boutiques, galleries, artisan markets, and private-label programmes.</p>
               <div className="moq-badge">
                 <span>MINIMUM ORDER QUANTITY</span>
-                <strong>10,000 units</strong>
+                <strong>1,000 units</strong>
               </div>
             </div>
             
@@ -223,15 +222,15 @@ function Home() {
               </div>
               <div className="feature">
                 <h4>02 / Eco-Friendly</h4>
-                <p>Reusable felt format and natural dyes for an authentic finish.</p>
+                <p>Natural materials and authentic dyes for an authentic finish.</p>
               </div>
               <div className="feature">
                 <h4>03 / Private Label Ready</h4>
                 <p>Customise size, colour, design, assortment, and labelling.</p>
               </div>
               <div className="feature">
-                <h4>04 / Packing Efficiency</h4>
-                <p>Compresses for efficient packing and naturally recovers shape.</p>
+                <h4>04 / Efficient Delivery</h4>
+                <p>Carefully packed for efficient shipping and safe handling.</p>
               </div>
             </div>
           </div>
