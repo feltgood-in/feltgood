@@ -230,6 +230,21 @@ app.delete('/api/messages/:id', async (req, res) => {
   }
 });
 
+app.put('/api/messages/:id/read', async (req, res) => {
+  try {
+    const message = await Message.findById(req.params.id);
+    if (message) {
+      message.read = true;
+      await message.save();
+      res.json({ success: true, message: "Message marked as read" });
+    } else {
+      res.status(404).json({ success: false, message: "Message not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error updating message" });
+  }
+});
+
 // Admin Auth Route
 app.post('/api/admin/login', async (req, res) => {
   const { credential } = req.body;

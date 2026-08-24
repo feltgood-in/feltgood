@@ -14,7 +14,21 @@ function Navbar() {
   const { getTotalItems } = useInquiry();
   const totalItems = getTotalItems();
   const navigate = useNavigate();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const currentCategory = searchParams.get('category');
+  
   const [searchQuery, setSearchQuery] = React.useState('');
+  const [categories, setCategories] = React.useState([]);
+
+  React.useEffect(() => {
+    fetch('/api/products')
+      .then(res => res.json())
+      .then(data => {
+        setCategories(data.categories || []);
+      })
+      .catch(console.error);
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -25,6 +39,7 @@ function Navbar() {
   };
 
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
 
   return (
     <nav className="navbar">
@@ -45,25 +60,55 @@ function Navbar() {
             </span>
           </div>
         </Link>
+        <div className="nav-tabs hide-on-mobile">
+          {categories.slice(0, 5).map(cat => (
+            <Link key={cat.id} to={`/collections?category=${cat.id}`} className={currentCategory === cat.id ? 'active' : ''}>{cat.title}</Link>
+          ))}
+          {categories.length > 5 && (
+            <div 
+              className="nav-dropdown-container" 
+              onMouseEnter={() => setIsDropdownOpen(true)}
+              onMouseLeave={() => setIsDropdownOpen(false)}
+            >
+              <span className={`nav-dropdown-trigger ${categories.slice(5).some(cat => cat.id === currentCategory) ? 'active' : ''}`} style={{ cursor: 'pointer', padding: '0.5rem', fontWeight: 500 }}>
+                Collections ▾
+              </span>
+              {isDropdownOpen && (
+                <div className="nav-dropdown-menu">
+                  {categories.slice(5).map(cat => (
+                    <Link key={cat.id} to={`/collections?category=${cat.id}`} onClick={() => setTimeout(() => setIsDropdownOpen(false), 0)} className={currentCategory === cat.id ? 'active' : ''}>
+                      {cat.title}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
         {isMenuOpen && <div className="mobile-overlay hide-on-desktop" onClick={() => setIsMenuOpen(false)}></div>}
         <div className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
-          <form className="search-form" onSubmit={handleSearch}>
-            <input 
-              type="text" 
-              className="search-input" 
-              placeholder="Search products..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button type="submit" className="search-btn">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            </button>
-          </form>
+          <Link to="/search" className="nav-icon-link search-icon-only" style={{ display: 'flex', alignItems: 'center', color: 'var(--color-primary)' }} onClick={() => setIsMenuOpen(false)}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </Link>
           <Link to="/" className="hide-on-desktop" onClick={() => setIsMenuOpen(false)}>Home</Link>
-          <Link to="/collections" onClick={() => setIsMenuOpen(false)}>Collections</Link>
+          
+          <div className="mobile-collections hide-on-desktop">
+            {categories.slice(0, 5).map(cat => (
+              <Link key={cat.id} to={`/collections?category=${cat.id}`} onClick={() => setIsMenuOpen(false)} className={currentCategory === cat.id ? 'active' : ''}>{cat.title}</Link>
+            ))}
+            {categories.length > 5 && (
+              <div style={{ marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid #eee' }}>
+                <div style={{ padding: '0.5rem 0', fontWeight: 'bold', color: 'var(--color-primary)' }}>More Collections</div>
+                {categories.slice(5).map(cat => (
+                  <Link key={cat.id} to={`/collections?category=${cat.id}`} onClick={() => setIsMenuOpen(false)} className={currentCategory === cat.id ? 'active' : ''}>{cat.title}</Link>
+                ))}
+              </div>
+            )}
+          </div>
+          
           <Link to="/contact" onClick={() => setIsMenuOpen(false)}>Contact</Link>
           <Link to="/item-list" className="nav-icon-link" style={{ position: 'relative', display: 'flex', alignItems: 'center', color: 'var(--color-primary)' }} onClick={() => setIsMenuOpen(false)}>
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -100,6 +145,9 @@ function ScrollToTop() {
   const { pathname } = useLocation();
 
   React.useEffect(() => {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
     window.scrollTo(0, 0);
   }, [pathname]);
 

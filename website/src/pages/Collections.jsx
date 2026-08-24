@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useInquiry } from '../context/InquiryContext';
 import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
@@ -7,7 +7,10 @@ import { cld } from '../cloudinary';
 
 function Collections() {
   const { addToInquiry } = useInquiry();
-  const [selectedCategory, setSelectedCategory] = useState('all');
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const selectedCategory = searchParams.get('category') || 'all';
+  
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [viewMode, setViewMode] = useState('3');
@@ -32,7 +35,7 @@ function Collections() {
   } else {
     const cat = categories.find(c => c.id === selectedCategory);
     if (cat) {
-      displayedProducts = cat.products.map(p => products.find(fullP => fullP.id === p.id)).filter(Boolean);
+      displayedProducts = products.filter(p => p.categoryId === selectedCategory);
     }
   }
 
@@ -76,7 +79,7 @@ function Collections() {
     <div className="collections-page container section animate-fade-in">
       
       {/* Top Bar matching image */}
-      <div className="collections-top-bar" style={{ padding: '0 4px' }}>
+      <div className="collections-top-bar" style={{ padding: '0 4px', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
         <div className="view-toggles hide-on-mobile" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
           <svg width="20" height="20" viewBox="0 0 24 24" fill={viewMode === '2' ? "var(--color-primary)" : "#ccc"} style={{ cursor: 'pointer', transition: 'fill 0.2s' }} onClick={() => setViewMode('2')}>
             <rect x="2" y="4" width="8" height="16" rx="1"/>
@@ -94,74 +97,45 @@ function Collections() {
             <rect x="19" y="4" width="4" height="16" rx="1"/>
           </svg>
         </div>
-        <select className="sort-dropdown" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)}>
-          <option value="low-to-high">Price, low to high</option>
-          <option value="high-to-low">Price, high to low</option>
-        </select>
-        <button 
-          className="hide-on-desktop" 
-          onClick={() => setIsMobileFilterOpen(true)}
-          style={{ background: 'none', border: 'none', padding: 0, fontSize: '0.9rem', color: 'var(--color-primary)', fontWeight: 'bold', cursor: 'pointer', textDecoration: 'underline' }}
-        >
-          Filters
-        </button>
+        
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginLeft: 'auto', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <div className="price-inputs" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
+            <span style={{ fontWeight: 'bold', color: 'var(--color-primary)' }}>Price:</span>
+            <input type="number" placeholder="0" value={minPrice} onChange={e => setMinPrice(e.target.value)} min="0" style={{ width: '60px', padding: '0.4rem', border: '1px solid #E5DED0', borderRadius: '6px' }} />
+            <span>-</span>
+            <input type="number" placeholder="999" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} min="0" style={{ width: '60px', padding: '0.4rem', border: '1px solid #E5DED0', borderRadius: '6px' }} />
+          </div>
+          <select className="sort-dropdown" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ padding: '0.5rem 2rem 0.5rem 1rem', border: '1px solid #E5DED0', borderRadius: '6px', background: 'white', cursor: 'pointer', appearance: 'none', backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.7rem center', backgroundSize: '1em' }}>
+            <option value="low-to-high">Price, low to high</option>
+            <option value="high-to-low">Price, high to low</option>
+          </select>
+        </div>
       </div>
 
-      <div className="collections-layout">
-        {/* Sidebar */}
-        <aside className="sidebar-filters hide-on-mobile">
-          <div className="filter-section">
-            <h3 className="filter-title">Product categories</h3>
-            <ul className="category-list">
-              <li 
-                className={selectedCategory === 'all' ? 'active' : ''}
-                onClick={() => setSelectedCategory('all')}
-              >
-                All Products <span>({products.length})</span>
-              </li>
-              {categories.map(cat => (
-                <li 
-                  key={cat.id} 
-                  className={selectedCategory === cat.id ? 'active' : ''}
-                  onClick={() => setSelectedCategory(cat.id)}
-                >
-                  {cat.title} <span>({cat.products.length})</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-
-
-          <div className="filter-section">
-            <h3 className="filter-title">Price</h3>
-            <div className="price-inputs">
-              <span>Price:</span>
-              <input type="number" placeholder="0" value={minPrice} onChange={e => setMinPrice(e.target.value)} min="0" />
-              <span>-</span>
-              <input type="number" placeholder="999" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} min="0" />
-            </div>
-          </div>
-        </aside>
+      <div className="collections-layout" style={{ display: 'block' }}>
 
         {/* Product Grid */}
         <div className={`collections-product-grid grid-${viewMode}`}>
           {displayedProducts.map(product => (
             <Link to={`/product/${product.id}`} key={product.id} className="card product-card-filter">
               <div className={`card-image ${product.color}`} style={{ aspectRatio: '1 / 1', height: 'auto', position: 'relative' }}>
-                <AdvancedImage 
-                  cldImg={cld.image(product.image).resize(fill().width(300).height(300)).format('auto').quality('auto')} 
-                  plugins={[lazyload(), placeholder({mode: 'blur'})]}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
+                {product.image ? (
+                  <AdvancedImage 
+                    cldImg={cld.image(product.image).resize(fill().width(300).height(300)).format('auto').quality('auto')} 
+                    plugins={[lazyload(), placeholder({mode: 'blur'})]}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>No Image</div>
+                )}
                 {product.badgeText && <div className="discount-badge">{product.badgeText}</div>}
               </div>
               <div className="card-content" style={{ padding: '1rem' }}>
-                <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '0.2rem', fontFamily: 'monospace' }}>{product.itemNumber}</div>
+
                 <h3 className="product-title">{product.name}</h3>
                 <div className="product-prices">
-                  {product.oldPrice && <span className="price-old">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{product.oldPrice.toFixed(2)}</span>}
-                  <span className="price-new">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{product.price.toFixed(2)}</span>
+                  {product.oldPrice > 0 && <span className="price-old">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{(product.oldPrice || 0).toFixed(2)}</span>}
+                  <span className="price-new">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{(product.price || 0).toFixed(2)}</span>
                 </div>
                 <button 
                   className="btn btn-outline add-to-cart-btn"
@@ -200,48 +174,6 @@ function Collections() {
         </div>
       )}
 
-      {/* Mobile Filter Drawer */}
-      <div className={`mobile-filter-drawer ${isMobileFilterOpen ? 'open' : ''}`}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', borderBottom: '1px solid #eee', paddingBottom: '1rem' }}>
-          <h3 style={{ fontFamily: 'var(--font-serif)', color: 'var(--color-primary)' }}>Filters</h3>
-          <button style={{ background: 'none', border: 'none', cursor: 'pointer' }} onClick={() => setIsMobileFilterOpen(false)}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-        <div>
-          <div className="filter-section">
-            <h3 className="filter-title">Product categories</h3>
-            <ul className="category-list">
-              <li 
-                className={selectedCategory === 'all' ? 'active' : ''}
-                onClick={() => { setSelectedCategory('all'); setIsMobileFilterOpen(false); }}
-              >
-                All Products <span>({products.length})</span>
-              </li>
-              {categories.map(cat => (
-                <li 
-                  key={cat.id} 
-                  className={selectedCategory === cat.id ? 'active' : ''}
-                  onClick={() => { setSelectedCategory(cat.id); setIsMobileFilterOpen(false); }}
-                >
-                  {cat.title} <span>({cat.products.length})</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-      
-      {/* Mobile Filter Overlay */}
-      {isMobileFilterOpen && (
-        <div 
-          style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 999 }}
-          onClick={() => setIsMobileFilterOpen(false)}
-        ></div>
-      )}
     </>
   );
 }

@@ -72,7 +72,7 @@ function ProductDetail() {
           <div className="product-info">
             <div className="product-meta">
               <span className="badge">Wholesale</span>
-              <span className="sku" style={{ marginLeft: '1rem', color: '#666', fontFamily: 'monospace' }}>{product.itemNumber}</span>
+
             </div>
             <h1 className="product-title">{product.name}</h1>
             <p className="product-subtitle">{product.subtitle}</p>

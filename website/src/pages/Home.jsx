@@ -47,21 +47,21 @@ function Home() {
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
+  const touchStart = React.useRef(null);
+  const touchEnd = React.useRef(null);
 
   const minSwipeDistance = 50;
 
   const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches ? e.targetTouches[0].clientX : e.clientX);
+    touchEnd.current = null;
+    touchStart.current = e.targetTouches ? e.targetTouches[0].clientX : e.clientX;
   };
 
-  const onTouchMove = (e) => setTouchEnd(e.targetTouches ? e.targetTouches[0].clientX : e.clientX);
+  const onTouchMove = (e) => touchEnd.current = e.targetTouches ? e.targetTouches[0].clientX : e.clientX;
 
   const onTouchEndEvent = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
+    if (!touchStart.current || !touchEnd.current) return;
+    const distance = touchStart.current - touchEnd.current;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
     if (isLeftSwipe) {
@@ -69,8 +69,8 @@ function Home() {
     } else if (isRightSwipe) {
       prevSlide();
     }
-    setTouchStart(null);
-    setTouchEnd(null);
+    touchStart.current = null;
+    touchEnd.current = null;
   };
 
   return (
@@ -84,11 +84,11 @@ function Home() {
         onTouchEnd={onTouchEndEvent}
         onMouseDown={onTouchStart}
         onMouseMove={(e) => {
-          if (touchStart) onTouchMove(e);
+          if (touchStart.current) onTouchMove(e);
         }}
         onMouseUp={onTouchEndEvent}
         onMouseLeave={() => {
-          if (touchStart) {
+          if (touchStart.current) {
             onTouchEndEvent();
           }
         }}
@@ -166,7 +166,7 @@ function Home() {
           return (
             <div key={category.id} className="category-group" style={{ marginBottom: '6rem' }}>
               <h2 className="section-title text-center" style={{ fontSize: '2.5rem' }}>{homepageData.categoryTitles?.[category.id] || category.title}</h2>
-              <p className="section-subtitle text-center">{category.subtitle}</p>
+              <p className="section-subtitle text-center">{homepageData.categorySubtitles?.[category.id] || category.subtitle}</p>
               
               <div className="grid">
                 {shuffledProducts.map((product) => {
@@ -180,7 +180,7 @@ function Home() {
                       />
                     </div>
                     <div className="card-content">
-                      <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '0.2rem', fontFamily: 'monospace' }}>{product.itemNumber}</div>
+
                       <h3 style={{ fontSize: '1.25rem' }}>{product.name}</h3>
                       <p>{product.desc || 'Premium handmade decor designed for elegant styling.'}</p>
                     </div>

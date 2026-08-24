@@ -42,7 +42,7 @@ function ItemList() {
                   />
                 </div>
                 <div className="card-content">
-                  <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '0.2rem', fontFamily: 'monospace' }}>{item.itemNumber}</div>
+
                   <h3 style={{ fontSize: '1.25rem' }}>{item.name}</h3>
                   <p style={{ marginBottom: '1rem' }}>{item.desc || 'Handmade felt decor designed for seasonal styling.'}</p>
                   <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #E5DED0' }}>

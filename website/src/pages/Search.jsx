@@ -7,9 +7,15 @@ import { cld } from '../cloudinary';
 
 function Search() {
   const [products, setProducts] = useState([]);
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
+  const [searchInput, setSearchInput] = useState(query);
   const { addToInquiry } = useInquiry();
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    setSearchParams({ q: searchInput });
+  };
 
   useEffect(() => {
     fetch('/api/products')
@@ -52,6 +58,17 @@ function Search() {
         <Link to="/">Home</Link> / <span>Search</span>
       </div>
 
+      <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '0.5rem', maxWidth: '600px', margin: '0 auto 2rem' }}>
+        <input 
+          type="text" 
+          value={searchInput} 
+          onChange={(e) => setSearchInput(e.target.value)} 
+          placeholder="Search for products..." 
+          style={{ flex: 1, padding: '0.8rem 1.2rem', borderRadius: '8px', border: '1px solid #E5DED0', fontSize: '1rem', fontFamily: 'var(--font-sans)' }}
+        />
+        <button type="submit" className="btn" style={{ padding: '0.8rem 1.5rem' }}>Search</button>
+      </form>
+
       <h1 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'var(--color-primary)', fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 400 }}>
         Search Results for "{query}"
       </h1>
@@ -64,17 +81,21 @@ function Search() {
           {searchResults.map(product => (
             <Link to={`/product/${product.id}`} key={product.id} className="card product-card-filter">
               <div className={`card-image ${product.color}`} style={{ height: '240px', position: 'relative' }}>
-                <AdvancedImage 
-                  cldImg={cld.image(product.image).resize(fill().width(300).height(300)).format('auto').quality('auto')} 
-                  plugins={[lazyload(), placeholder({mode: 'blur'})]}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
+                {product.image ? (
+                  <AdvancedImage 
+                    cldImg={cld.image(product.image).resize(fill().width(300).height(300)).format('auto').quality('auto')} 
+                    plugins={[lazyload(), placeholder({mode: 'blur'})]}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                ) : (
+                  <div style={{ width: '100%', height: '100%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>No Image</div>
+                )}
               </div>
               <div className="card-content" style={{ padding: '1rem' }}>
                 <h3 className="product-title">{product.name}</h3>
                 <div className="product-prices">
-                  {product.oldPrice && <span className="price-old">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{product.oldPrice.toFixed(2)}</span>}
-                  <span className="price-new">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{product.price.toFixed(2)}</span>
+                  {product.oldPrice > 0 && <span className="price-old">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{(product.oldPrice || 0).toFixed(2)}</span>}
+                  <span className="price-new">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{(product.price || 0).toFixed(2)}</span>
                 </div>
                 <button 
                   className="btn btn-outline add-to-cart-btn"

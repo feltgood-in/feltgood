@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import { createPortal } from 'react-dom';
 import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
@@ -24,14 +24,24 @@ function Admin() {
   const [editingSection, setEditingSection] = useState(null);
   const [editingCategory, setEditingCategory] = useState(null);
   const [selectingProductFor, setSelectingProductFor] = useState(null);
+  const [isAddingCollection, setIsAddingCollection] = useState(false);
+  const [newCollectionTitle, setNewCollectionTitle] = useState('');
+  const [renamingCategory, setRenamingCategory] = useState(false);
+  const [renamingCategoryTitle, setRenamingCategoryTitle] = useState('');
+
+  useEffect(() => {
+    setRenamingCategory(false);
+  }, [activeTab]);
   
   const [homepageData, setHomepageData] = useState(null);
+  const [originalHomepageData, setOriginalHomepageData] = useState(null);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [messages, setMessages] = useState([]);
   const [expandedMessageId, setExpandedMessageId] = useState(null);
   const [messageToDelete, setMessageToDelete] = useState(null);
   const [productToDelete, setProductToDelete] = useState(null);
+  const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [uploadingImage, setUploadingImage] = useState(null);
@@ -112,6 +122,7 @@ function Admin() {
       const res = await fetch('/api/homepage');
       const data = await res.json();
       setHomepageData(data);
+      setOriginalHomepageData(JSON.stringify(data));
     } catch (err) {
       console.error(err);
     }
@@ -188,7 +199,11 @@ function Admin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(homepageData)
       });
-      if (res.ok) alert('Homepage saved successfully!');
+      if (res.ok) {
+        setSuccessMessage('Homepage saved successfully!');
+        setOriginalHomepageData(JSON.stringify(homepageData));
+        setTimeout(() => setSuccessMessage(''), 3000);
+      }
     } catch (err) {
       console.error(err);
       alert('Failed to save homepage');
@@ -268,7 +283,135 @@ function Admin() {
     }
   };
 
+  const handleCreateNewCollection = async () => {
+    if (!newCollectionTitle.trim()) return;
+    
+    const newCatId = newCollectionTitle.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const newCategory = {
+      id: newCatId,
+      title: newCollectionTitle.trim(),
+      subtitle: ''
+    };
+    
+    const updatedCategories = [...categories, newCategory];
+    setCategories(updatedCategories);
+    
+    setLoading(true);
+    try {
+      const res = await fetch('/api/products', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ categories: updatedCategories, products })
+      });
+      
+      if (res.ok) {
+        setSuccessMessage('Collection created successfully!');
+        setNewCollectionTitle('');
+        setIsAddingCollection(false);
+        setActiveTab(`products-${newCategory.id}`);
+        setTimeout(() => setSuccessMessage(''), 3000);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to save new collection');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRenameCategory = async () => {
+    if (!renamingCategoryTitle.trim()) return;
+    
+    const categoryId = activeTab.replace('products-', '');
+    const updatedCategories = categories.map(c => 
+      c.id === categoryId ? { ...c, title: renamingCategoryTitle.trim() } : c
+    );
+    
+    setCategories(updatedCategories);
+    setLoading(true);
+    
+    try {
+      const res = await fetch('/api/products', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ categories: updatedCategories, products })
+      });
+      
+      if (res.ok) {
+        setSuccessMessage('Collection renamed successfully!');
+        setRenamingCategory(false);
+        setTimeout(() => setSuccessMessage(''), 3000);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to rename collection');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMoveCategory = async (direction) => {
+    const categoryId = activeTab.replace('products-', '');
+    const index = categories.findIndex(c => c.id === categoryId);
+    if (index === -1) return;
+    if (direction === -1 && index === 0) return; // Already at first position
+    if (direction === 1 && index === categories.length - 1) return; // Already at last position
+    
+    const updatedCategories = [...categories];
+    const temp = updatedCategories[index];
+    updatedCategories[index] = updatedCategories[index + direction];
+    updatedCategories[index + direction] = temp;
+    
+    setCategories(updatedCategories);
+    setLoading(true);
+    
+    try {
+      const res = await fetch('/api/products', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ categories: updatedCategories, products })
+      });
+      
+      if (res.ok) {
+        setSuccessMessage('Collection reordered successfully!');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to reorder collection');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteCategory = async (categoryId) => {
+    const updatedCategories = categories.filter(c => c.id !== categoryId);
+    setCategories(updatedCategories);
+    setLoading(true);
+    
+    try {
+      const res = await fetch('/api/products', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ categories: updatedCategories, products })
+      });
+      
+      if (res.ok) {
+        setSuccessMessage('Collection deleted successfully!');
+        setCategoryToDelete(null);
+        setActiveTab(updatedCategories.length > 0 ? `products-${updatedCategories[0].id}` : 'homepage');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete collection');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCreateNewProduct = () => {
+    const currentCategoryId = activeTab.startsWith('products-') ? activeTab.replace('products-', '') : (categories.length > 0 ? categories[0].id : '');
     const newProduct = {
       id: `new-item-${Date.now()}`,
       itemNumber: '',
@@ -278,7 +421,7 @@ function Admin() {
       description: '',
       price: 0,
       currency: 'USD',
-      categoryId: categories.length > 0 ? categories[0].id : '',
+      categoryId: currentCategoryId,
       image: '',
       images: [],
       pricing: { base: 0, tier5k: 0, tier10k: 0 }
@@ -439,14 +582,6 @@ function Admin() {
           </li>
           <li>
             <button 
-              onClick={() => setActiveTab('products')} 
-              style={{ width: '100%', textAlign: 'left', padding: '0.8rem', background: activeTab === 'products' ? 'white' : 'transparent', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: activeTab === 'products' ? 'bold' : 'normal' }}
-            >
-              Manage Products
-            </button>
-          </li>
-          <li>
-            <button 
               onClick={() => setActiveTab('messages')} 
               style={{ width: '100%', textAlign: 'left', padding: '0.8rem', background: activeTab === 'messages' ? 'white' : 'transparent', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: activeTab === 'messages' ? 'bold' : 'normal', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
             >
@@ -457,6 +592,46 @@ function Admin() {
                 </span>
               )}
             </button>
+          </li>
+        </ul>
+
+        <h3 style={{ marginTop: '2rem', marginBottom: '1rem', fontSize: '0.9rem', color: '#666', textTransform: 'uppercase', letterSpacing: '1px' }}>Collections</h3>
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+          {categories.map(c => (
+            <li key={c.id}>
+              <button 
+                onClick={() => setActiveTab(`products-${c.id}`)} 
+                style={{ width: '100%', textAlign: 'left', padding: '0.6rem 0.8rem', background: activeTab === `products-${c.id}` ? 'white' : 'transparent', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: activeTab === `products-${c.id}` ? 'bold' : 'normal', fontSize: '0.9rem' }}
+              >
+                {c.title}
+              </button>
+            </li>
+          ))}
+          
+          <li style={{ marginTop: '0.5rem' }}>
+            {!isAddingCollection ? (
+              <button 
+                onClick={() => setIsAddingCollection(true)}
+                style={{ width: '100%', textAlign: 'left', padding: '0.6rem 0.8rem', background: 'transparent', border: '1px dashed #ccc', borderRadius: '4px', cursor: 'pointer', color: '#666', fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+              >
+                + New Collection
+              </button>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', background: 'white', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ddd' }}>
+                <input 
+                  type="text" 
+                  placeholder="Collection Name..." 
+                  value={newCollectionTitle}
+                  onChange={(e) => setNewCollectionTitle(e.target.value)}
+                  style={{ padding: '0.4rem', border: '1px solid #ccc', borderRadius: '4px', fontSize: '0.9rem' }}
+                  autoFocus
+                />
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button onClick={handleCreateNewCollection} disabled={loading} style={{ flex: 1, padding: '0.4rem', background: 'var(--color-primary)', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}>Save</button>
+                  <button onClick={() => { setIsAddingCollection(false); setNewCollectionTitle(''); }} style={{ flex: 1, padding: '0.4rem', background: '#eee', color: '#333', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '0.8rem' }}>Cancel</button>
+                </div>
+              </div>
+            )}
           </li>
         </ul>
 
@@ -478,12 +653,37 @@ function Admin() {
       {/* Main Content Area */}
       <main style={{ flex: 1, padding: '0 3rem 3rem 3rem', background: '#faf9f6' }}>
         
+        {successMessage && (
+          <div style={{
+            backgroundColor: 'rgba(46, 191, 104, 0.1)',
+            color: '#1e4635',
+            padding: '1rem',
+            borderRadius: '8px',
+            marginTop: '3rem',
+            marginBottom: '1.5rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            fontWeight: '600'
+          }}>
+            <span style={{ fontSize: '1.2rem', color: '#2ebf68' }}>✔</span>
+            {successMessage}
+          </div>
+        )}
+
         {/* HOMEPAGE TAB */}
         {activeTab === 'homepage' && homepageData && editingSection === null && (
           <div>
-            <div style={{ position: 'sticky', top: 0, background: '#faf9f6', paddingTop: '3rem', paddingBottom: '1.5rem', zIndex: 10, margin: '0 -3rem 2rem -3rem', paddingLeft: '3rem', paddingRight: '3rem' }}>
-              <h1 style={{ marginBottom: '0.5rem', marginTop: 0 }}>Manage Homepage</h1>
-              <p style={{ margin: 0, color: '#666' }}>Edit the storefront layout and banners.</p>
+            <div style={{ position: 'sticky', top: 0, background: '#faf9f6', paddingTop: '3rem', paddingBottom: '1.5rem', zIndex: 10, margin: '0 -3rem 2rem -3rem', paddingLeft: '3rem', paddingRight: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h1 style={{ marginBottom: '0.5rem', marginTop: 0 }}>Manage Homepage</h1>
+                <p style={{ margin: 0, color: '#666' }}>Edit the storefront layout and banners.</p>
+              </div>
+              {originalHomepageData !== JSON.stringify(homepageData) && (
+                <button onClick={handleSaveHomepage} className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', fontSize: '1rem' }}>
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </button>
+              )}
             </div>
             
             <div style={{ background: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
@@ -581,6 +781,23 @@ function Admin() {
                               style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ccc', fontSize: '1rem' }}
                             />
                           </div>
+                          <div style={{ marginBottom: '1.5rem' }}>
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Collection Display Subtitle</label>
+                            <input 
+                              type="text" 
+                              value={homepageData.categorySubtitles?.[cat.id] || cat.subtitle}
+                              onChange={(e) => {
+                                setHomepageData({
+                                  ...homepageData,
+                                  categorySubtitles: {
+                                    ...homepageData.categorySubtitles,
+                                    [cat.id]: e.target.value
+                                  }
+                                });
+                              }}
+                              style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ccc', fontSize: '1rem' }}
+                            />
+                          </div>
                           
                           <p style={{ marginBottom: '1rem', color: '#666', fontWeight: 'bold' }}>
                             Featured Products
@@ -605,12 +822,12 @@ function Admin() {
                                 </div>
                               );
                             })}
-                            {selectedIds.length === 0 && (
+                            {selectedIds.length < 4 && (
                               <div 
-                                onClick={() => setSelectingProductFor({ type: 'category', categoryId: cat.id, slotIndex: 0 })}
+                                onClick={() => setSelectingProductFor({ type: 'category', categoryId: cat.id, slotIndex: selectedIds.length })}
                                 style={{ width: '80px', height: '80px', background: '#f9f9f9', border: '2px dashed #ccc', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#666', fontSize: '0.8rem', textAlign: 'center', padding: '0.5rem' }}
                               >
-                                Select Products
+                                {selectedIds.length === 0 ? 'Select Products' : '+ Add'}
                               </div>
                             )}
                           </div>
@@ -643,9 +860,11 @@ function Admin() {
                 >
                   + Add New Banner
                 </button>
-                <button onClick={handleSaveHomepage} className="btn btn-primary" style={{ padding: '0.4rem 1rem' }}>
-                  {loading ? 'Saving...' : 'Save All Changes'}
-                </button>
+                {originalHomepageData !== JSON.stringify(homepageData) && (
+                  <button onClick={handleSaveHomepage} className="btn btn-primary" style={{ padding: '0.4rem 1rem' }}>
+                    {loading ? 'Saving...' : 'Save All Changes'}
+                  </button>
+                )}
               </div>
             </div>
             
@@ -783,7 +1002,7 @@ function Admin() {
         )}
 
         {/* PRODUCTS TAB */}
-        {activeTab === 'products' && (
+        {activeTab.startsWith('products-') && (
           <div>
             {editingProduct ? (
               <div style={{ background: 'white', borderRadius: '8px', padding: '2rem', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
@@ -885,11 +1104,7 @@ function Admin() {
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
-                      <div className="form-group">
-                        <label>Current Price</label>
-                        <input type="number" step="0.01" value={editingProduct.price || 0} onChange={e => setEditingProduct({...editingProduct, price: parseFloat(e.target.value)})} className="form-control" />
-                      </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
                       <div className="form-group">
                         <label>Old Price (Strikethrough)</label>
                         <input type="number" step="0.01" value={editingProduct.oldPrice || ''} onChange={e => setEditingProduct({...editingProduct, oldPrice: e.target.value ? parseFloat(e.target.value) : undefined})} className="form-control" placeholder="Leave empty to hide" />
@@ -923,7 +1138,7 @@ function Admin() {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', background: '#f9f9f9', padding: '1rem', borderRadius: '8px', border: '1px solid #eaeaea' }}>
                       <div className="form-group">
                         <label>Base Tier</label>
-                        <input type="number" step="0.01" value={editingProduct.pricing?.base || 0} onChange={e => setEditingProduct({...editingProduct, pricing: {...editingProduct.pricing, base: parseFloat(e.target.value)}})} className="form-control" />
+                        <input type="number" step="0.01" value={editingProduct.pricing?.base || 0} onChange={e => setEditingProduct({...editingProduct, price: parseFloat(e.target.value), pricing: {...editingProduct.pricing, base: parseFloat(e.target.value)}})} className="form-control" />
                       </div>
                       <div className="form-group">
                         <label>5k+ Tier</label>
@@ -939,27 +1154,71 @@ function Admin() {
               </div>
             ) : (
             <>
-              {successMessage && (
-                <div style={{
-                  backgroundColor: 'rgba(46, 191, 104, 0.1)',
-                  color: '#1e4635',
-                  padding: '1rem',
-                  borderRadius: '8px',
-                  marginTop: '3rem',
-                  marginBottom: '1.5rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  fontWeight: '600'
-                }}>
-                  <span style={{ fontSize: '1.2rem', color: '#2ebf68' }}>✓</span>
-                  {successMessage}
-                </div>
-              )}
-              <div style={{ position: 'sticky', top: 0, background: '#faf9f6', paddingTop: successMessage ? '1.5rem' : '3rem', paddingBottom: '1.5rem', zIndex: 10, margin: '0 -3rem 2rem -3rem', paddingLeft: '3rem', paddingRight: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <div>
-                  <h1 style={{ marginBottom: '0.5rem', marginTop: 0 }}>Manage Products</h1>
-                  <p style={{ margin: 0, color: '#666' }}>Edit items, prices, and upload images.</p>
+              <div style={{ position: 'sticky', top: 0, background: '#faf9f6', paddingTop: '3rem', paddingBottom: '1.5rem', zIndex: 10, margin: '0 -3rem 2rem -3rem', paddingLeft: '3rem', paddingRight: '3rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {!renamingCategory ? (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                      <h1 style={{ margin: 0 }}>Manage: {categories.find(c => c.id === activeTab.replace('products-', ''))?.title || activeTab.replace('products-', '')}</h1>
+                      <button 
+                        onClick={() => {
+                          setRenamingCategoryTitle(categories.find(c => c.id === activeTab.replace('products-', ''))?.title || '');
+                          setRenamingCategory(true);
+                        }} 
+                        className="btn btn-outline" 
+                        style={{ padding: '0.3rem 0.8rem', fontSize: '0.8rem' }}
+                      >
+                        Rename
+                      </button>
+                      
+                      {(() => {
+                        const currentCatId = activeTab.replace('products-', '');
+                        const index = categories.findIndex(c => c.id === currentCatId);
+                        return (
+                          <div style={{ display: 'flex', gap: '0.3rem', marginLeft: '1rem' }}>
+                            <button 
+                              onClick={() => handleMoveCategory(-1)}
+                              disabled={index <= 0 || loading}
+                              className="btn btn-outline"
+                              style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem', opacity: index <= 0 ? 0.5 : 1 }}
+                              title="Move Left (Up in list)"
+                            >
+                              ← Move Left
+                            </button>
+                            <button 
+                              onClick={() => handleMoveCategory(1)}
+                              disabled={index === -1 || index >= categories.length - 1 || loading}
+                              className="btn btn-outline"
+                              style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem', opacity: index === -1 || index >= categories.length - 1 ? 0.5 : 1 }}
+                              title="Move Right (Down in list)"
+                            >
+                              Move Right →
+                            </button>
+                            <button 
+                              onClick={() => setCategoryToDelete(currentCatId)}
+                              className="btn btn-outline"
+                              style={{ padding: '0.3rem 0.6rem', fontSize: '0.8rem', color: '#d93025', borderColor: '#fce8e6', background: '#fff9f9', marginLeft: '1rem' }}
+                            >
+                              Delete Collection
+                            </button>
+                          </div>
+                        );
+                      })()}
+                      
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                      <input 
+                        type="text" 
+                        value={renamingCategoryTitle}
+                        onChange={(e) => setRenamingCategoryTitle(e.target.value)}
+                        style={{ padding: '0.5rem', fontSize: '1.5rem', fontWeight: 'bold', border: '1px solid #ccc', borderRadius: '4px', width: '300px' }}
+                        autoFocus
+                      />
+                      <button onClick={handleRenameCategory} disabled={loading} className="btn btn-primary" style={{ padding: '0.5rem 1rem' }}>{loading ? 'Saving...' : 'Save'}</button>
+                      <button onClick={() => setRenamingCategory(false)} className="btn btn-outline" style={{ padding: '0.5rem 1rem' }}>Cancel</button>
+                    </div>
+                  )}
+                  <p style={{ margin: 0, color: '#666' }}>Edit items, prices, and upload images for this collection.</p>
                 </div>
                 <button onClick={handleCreateNewProduct} className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', marginTop: '0.5rem' }}>
                   + New Product
@@ -977,7 +1236,7 @@ function Admin() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products.map((product, index) => (
+                  {products.filter(p => p.categoryId === activeTab.replace('products-', '')).map((product, index) => (
                     <tr key={product.id} style={{ borderBottom: '1px solid #eaeaea' }}>
                       <td style={{ padding: '1rem', color: '#555', fontFamily: 'monospace' }}>
                         {product.itemNumber || `ITM-${String(index + 1).padStart(3, '0')}`}
@@ -1001,9 +1260,9 @@ function Admin() {
                       </td>
                     </tr>
                   ))}
-                  {products.length === 0 && (
+                  {products.filter(p => p.categoryId === activeTab.replace('products-', '')).length === 0 && (
                     <tr>
-                      <td colSpan="5" style={{ padding: '2rem', textAlign: 'center', color: '#888' }}>No products found.</td>
+                      <td colSpan="5" style={{ padding: '2rem', textAlign: 'center', color: '#888' }}>No products found in this collection.</td>
                     </tr>
                   )}
                   </tbody>
@@ -1297,7 +1556,9 @@ function Admin() {
             </p>
 
             <div style={{ overflowY: 'auto', flex: 1, borderTop: '1px solid #eee', paddingTop: '1rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
-              {products.map(product => {
+              {products
+                .filter(p => selectingProductFor.type === 'category' ? p.categoryId === selectingProductFor.categoryId : true)
+                .map(product => {
                 return (
                   <div 
                     key={product.id}
@@ -1405,6 +1666,39 @@ function Admin() {
               </button>
               <button 
                 onClick={() => handleDeleteProduct(productToDelete)} 
+                className="btn btn-primary" 
+                style={{ padding: '0.6rem 1.5rem', background: '#d93025', borderColor: '#d93025' }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
+      {/* DELETE CATEGORY CONFIRMATION MODAL */}
+      {categoryToDelete && createPortal(
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, 
+          backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 1100, 
+          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem'
+        }}>
+          <div style={{
+            background: 'white', borderRadius: '12px', padding: '2rem', 
+            width: '100%', maxWidth: '400px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
+          }}>
+            <h3 style={{ marginTop: 0, marginBottom: '1rem', color: 'var(--color-primary)' }}>Confirm Collection Deletion</h3>
+            <p style={{ marginBottom: '2rem', color: '#666' }}>Are you sure you want to delete this collection? This will permanently remove the tab from your website. Products within this collection will remain but won't be easily visible unless reassigned.</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
+              <button 
+                onClick={() => setCategoryToDelete(null)} 
+                className="btn btn-outline" 
+                style={{ padding: '0.6rem 1.5rem' }}
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => handleDeleteCategory(categoryToDelete)} 
                 className="btn btn-primary" 
                 style={{ padding: '0.6rem 1.5rem', background: '#d93025', borderColor: '#d93025' }}
               >
