@@ -4,9 +4,11 @@ import { useInquiry } from '../context/InquiryContext';
 import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { cld } from '../cloudinary';
+import { useLanguage } from '../context/LanguageContext';
 
 function Collections() {
   const { addToInquiry } = useInquiry();
+  const { language } = useLanguage();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const selectedCategory = searchParams.get('category') || 'all';
@@ -18,15 +20,22 @@ function Collections() {
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     fetch('/api/products')
       .then(res => res.json())
       .then(data => {
         setProducts(data.products || []);
         setCategories(data.categories || []);
+        setLoading(false);
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
   }, []);
+
 
   // Filter products based on selected category
   let displayedProducts = [];
@@ -69,10 +78,21 @@ function Collections() {
   const confirmAddToCart = () => {
     if (selectedProduct && quantity > 0) {
       addToInquiry(selectedProduct, quantity);
-      alert(`${selectedProduct.name} (Qty: ${quantity}) added to your inquiry list!`);
+      const addedMsg = language === 'es' 
+        ? `${selectedProduct.nameSpanish || selectedProduct.name} (Cant: ${quantity}) añadido a su lista de consultas!`
+        : `${selectedProduct.name} (Qty: ${quantity}) added to your inquiry list!`;
+      alert(addedMsg);
       setSelectedProduct(null);
     }
   };
+
+  if (loading) {
+    return (
+      <div style={{ height: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: 'var(--color-text-light)', letterSpacing: '2px' }}>{language === 'es' ? 'CARGANDO...' : 'LOADING...'}</p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -100,14 +120,14 @@ function Collections() {
         
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginLeft: 'auto', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           <div className="price-inputs" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
-            <span style={{ fontWeight: 'bold', color: 'var(--color-primary)' }}>Price:</span>
+            <span style={{ fontWeight: 'bold', color: 'var(--color-primary)' }}>{language === 'es' ? 'Precio:' : 'Price:'}</span>
             <input type="number" placeholder="0" value={minPrice} onChange={e => setMinPrice(e.target.value)} min="0" style={{ width: '60px', padding: '0.4rem', border: '1px solid #E5DED0', borderRadius: '6px' }} />
             <span>-</span>
             <input type="number" placeholder="999" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} min="0" style={{ width: '60px', padding: '0.4rem', border: '1px solid #E5DED0', borderRadius: '6px' }} />
           </div>
           <select className="sort-dropdown" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ padding: '0.5rem 2rem 0.5rem 1rem', border: '1px solid #E5DED0', borderRadius: '6px', background: 'white', cursor: 'pointer', appearance: 'none', backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.7rem center', backgroundSize: '1em' }}>
-            <option value="low-to-high">Price, low to high</option>
-            <option value="high-to-low">Price, high to low</option>
+            <option value="low-to-high">{language === 'es' ? 'Precio, menor a mayor' : 'Price, low to high'}</option>
+            <option value="high-to-low">{language === 'es' ? 'Precio, mayor a menor' : 'Price, high to low'}</option>
           </select>
         </div>
       </div>
@@ -126,23 +146,27 @@ function Collections() {
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 ) : (
-                  <div style={{ width: '100%', height: '100%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>No Image</div>
+                  <div style={{ width: '100%', height: '100%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>{language === 'es' ? 'Sin Imagen' : 'No Image'}</div>
                 )}
-                {product.badgeText && <div className="discount-badge">{product.badgeText}</div>}
+                {(language === 'es' && product.badgeTextSpanish ? product.badgeTextSpanish : product.badgeText) && (
+                  <div className="discount-badge">
+                    {language === 'es' && product.badgeTextSpanish ? product.badgeTextSpanish : product.badgeText}
+                  </div>
+                )}
               </div>
               <div className="card-content" style={{ padding: '1rem' }}>
 
-                <h3 className="product-title">{product.name}</h3>
+                <h3 className="product-title">{language === 'es' && product.nameSpanish ? product.nameSpanish : product.name}</h3>
                 <div className="product-prices">
-                  {product.oldPrice > 0 && <span className="price-old">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{(product.oldPrice || 0).toFixed(2)}</span>}
-                  <span className="price-new">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{(product.price || 0).toFixed(2)}</span>
+                  {product.oldPrice > 0 && <span className="price-old">€{(product.oldPrice || 0).toFixed(2)}</span>}
+                  <span className="price-new">€{(product.price || 0).toFixed(2)}</span>
                 </div>
-                <button 
-                  className="btn btn-outline add-to-cart-btn"
-                  onClick={(e) => handleAddToCart(e, product)}
-                >
-                  ADD TO INQUIRY
-                </button>
+                  <button 
+                    className="btn btn-outline add-to-cart-btn"
+                    onClick={(e) => handleAddToCart(e, product)}
+                  >
+                    {language === 'es' ? 'AÑADIR A CONSULTA' : 'ADD TO INQUIRY'}
+                  </button>
               </div>
             </Link>
           ))}
@@ -154,10 +178,10 @@ function Collections() {
       {selectedProduct && (
         <div className="modal-overlay" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999999 }} onClick={() => setSelectedProduct(null)}>
           <div className="modal-content" style={{ background: '#fff', padding: '2rem', borderRadius: '12px', width: '90%', maxWidth: '400px', margin: 'auto' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ marginBottom: '1rem', color: 'var(--color-primary)' }}>Add to Inquiry</h3>
-            <p style={{ marginBottom: '1.5rem', fontWeight: 'bold' }}>{selectedProduct.name}</p>
+            <h3 style={{ marginBottom: '1rem', color: 'var(--color-primary)' }}>{language === 'es' ? 'Añadir a Consulta' : 'Add to Inquiry'}</h3>
+            <p style={{ marginBottom: '1.5rem', fontWeight: 'bold' }}>{language === 'es' && selectedProduct.nameSpanish ? selectedProduct.nameSpanish : selectedProduct.name}</p>
             <div className="form-group" style={{ marginBottom: '2rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#666' }}>Expected Quantity</label>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontSize: '0.9rem', color: '#666' }}>{language === 'es' ? 'Cantidad Esperada' : 'Expected Quantity'}</label>
               <input 
                 type="number" 
                 min="1" 
@@ -167,8 +191,8 @@ function Collections() {
               />
             </div>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
-              <button className="btn btn-outline" style={{ padding: '0.5rem 1rem' }} onClick={() => setSelectedProduct(null)}>Cancel</button>
-              <button className="btn" style={{ padding: '0.5rem 1.5rem' }} onClick={confirmAddToCart}>Add</button>
+              <button className="btn btn-outline" style={{ padding: '0.5rem 1rem' }} onClick={() => setSelectedProduct(null)}>{language === 'es' ? 'Cancelar' : 'Cancel'}</button>
+              <button className="btn" style={{ padding: '0.5rem 1.5rem' }} onClick={confirmAddToCart}>{language === 'es' ? 'Añadir' : 'Add'}</button>
             </div>
           </div>
         </div>

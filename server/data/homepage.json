@@ -105,5 +105,16 @@
       "ornament-fox"
     ]
   },
-  "categoryTitles": {}
+  "categoryTitles": {},
+  "categorySubtitlesSpanish": {
+    "seasonal-decor": "Piezas de mesa que aportan color y una suave presencia escultural al estilo festivo.",
+    "festive-essentials": "Medias llamativas con apliques, bordados y bordes terminados a mano.",
+    "botanical-edit": "Vegetación suave y reutilizable para puertas, ventanas, estantes e instalaciones.",
+    "countdown": "Veinticinco bolsillos táctiles convierten la cuenta regresiva de Navidad en un ritual familiar.",
+    "hanging-ornaments": "Personajes juguetones y táctiles para árboles, decoración infantil y regalos.",
+    "playful-decor": "Siluetas gráficas y bordados brillantes añaden personalidad más allá de lo tradicional.",
+    "everyday-gifting": "Encantadores dijes para bolsos y compañeros de llaves: livianos y listos para regalar.",
+    "animal-stories": "Narrativas de animales caprichosas capturadas en fieltro.",
+    "celebration-bunting": "Banderines festivos perfectos para cualquier ocasión."
+  }
 }

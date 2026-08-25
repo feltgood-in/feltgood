@@ -15,6 +15,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0 36px;
+  width: 100%;
 }
 
 .logo-container {
@@ -124,6 +126,7 @@
   letter-spacing: 0.5px;
   transition: color var(--transition-fast);
   position: relative;
+  white-space: nowrap;
 }
 
 .nav-links a:hover:not(.btn) {
@@ -147,7 +150,7 @@
 
 .nav-tabs {
   display: flex;
-  gap: 1.5rem;
+  gap: 40px;
   align-items: center;
 }
 
@@ -157,6 +160,7 @@
   letter-spacing: 0.5px;
   transition: color var(--transition-fast);
   position: relative;
+  white-space: nowrap;
 }
 
 .nav-tabs a:hover, .nav-tabs a.active {

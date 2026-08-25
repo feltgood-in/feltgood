@@ -28,6 +28,7 @@ function Admin() {
   const [newCollectionTitle, setNewCollectionTitle] = useState('');
   const [renamingCategory, setRenamingCategory] = useState(false);
   const [renamingCategoryTitle, setRenamingCategoryTitle] = useState('');
+  const [renamingCategoryTitleSpanish, setRenamingCategoryTitleSpanish] = useState('');
 
   useEffect(() => {
     setRenamingCategory(false);
@@ -324,7 +325,7 @@ function Admin() {
     
     const categoryId = activeTab.replace('products-', '');
     const updatedCategories = categories.map(c => 
-      c.id === categoryId ? { ...c, title: renamingCategoryTitle.trim() } : c
+      c.id === categoryId ? { ...c, title: renamingCategoryTitle.trim(), titleSpanish: renamingCategoryTitleSpanish.trim() } : c
     );
     
     setCategories(updatedCategories);
@@ -420,7 +421,6 @@ function Admin() {
       badgeText: '',
       description: '',
       price: 0,
-      currency: 'USD',
       categoryId: currentCategoryId,
       image: '',
       images: [],
@@ -764,23 +764,7 @@ function Admin() {
 
                       {isEditing && (
                         <div style={{ marginTop: '1.5rem', borderTop: '1px solid #e0e0e0', paddingTop: '1.5rem' }}>
-                          <div style={{ marginBottom: '1.5rem' }}>
-                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Collection Display Title</label>
-                            <input 
-                              type="text" 
-                              value={homepageData.categoryTitles?.[cat.id] || cat.title}
-                              onChange={(e) => {
-                                setHomepageData({
-                                  ...homepageData,
-                                  categoryTitles: {
-                                    ...homepageData.categoryTitles,
-                                    [cat.id]: e.target.value
-                                  }
-                                });
-                              }}
-                              style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ccc', fontSize: '1rem' }}
-                            />
-                          </div>
+
                           <div style={{ marginBottom: '1.5rem' }}>
                             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Collection Display Subtitle</label>
                             <input 
@@ -791,6 +775,21 @@ function Admin() {
                                   ...homepageData,
                                   categorySubtitles: {
                                     ...homepageData.categorySubtitles,
+                                    [cat.id]: e.target.value
+                                  }
+                                });
+                              }}
+                              style={{ width: '100%', padding: '0.8rem', borderRadius: '8px', border: '1px solid #ccc', fontSize: '1rem', marginBottom: '1rem' }}
+                            />
+                            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold' }}>Collection Display Subtitle (Spanish)</label>
+                            <input 
+                              type="text" 
+                              value={homepageData.categorySubtitlesSpanish?.[cat.id] || ''}
+                              onChange={(e) => {
+                                setHomepageData({
+                                  ...homepageData,
+                                  categorySubtitlesSpanish: {
+                                    ...(homepageData.categorySubtitlesSpanish || {}),
                                     [cat.id]: e.target.value
                                   }
                                 });
@@ -1111,14 +1110,7 @@ function Admin() {
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1.5rem' }}>
-                      <div className="form-group">
-                        <label>Currency</label>
-                        <select value={editingProduct.currency || 'INR'} onChange={e => setEditingProduct({...editingProduct, currency: e.target.value})} className="form-control" style={{ padding: '0.6rem', border: '1px solid #ccc', borderRadius: '4px' }}>
-                          <option value="INR">INR (₹)</option>
-                          <option value="USD">USD ($)</option>
-                        </select>
-                      </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                       <div className="form-group">
                         <label>Subtitle / Short Label</label>
                         <input type="text" value={editingProduct.subtitle || ''} onChange={e => setEditingProduct({...editingProduct, subtitle: e.target.value})} className="form-control" />
@@ -1132,6 +1124,34 @@ function Admin() {
                     <div className="form-group">
                       <label>Description</label>
                       <textarea rows="4" value={editingProduct.description || ''} onChange={e => setEditingProduct({...editingProduct, description: e.target.value})} className="form-control" style={{ resize: 'vertical' }}></textarea>
+                    </div>
+
+                    {/* Gap / Section header for Spanish */}
+                    <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid #eaeaea', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                      <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#666' }}>Spanish Translation Fields</h3>
+                      
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
+                        <div className="form-group">
+                          <label>Product Name (Spanish)</label>
+                          <input type="text" value={editingProduct.nameSpanish || ''} onChange={e => setEditingProduct({...editingProduct, nameSpanish: e.target.value})} className="form-control" />
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
+                        <div className="form-group">
+                          <label>Subtitle (Spanish)</label>
+                          <input type="text" value={editingProduct.subtitleSpanish || ''} onChange={e => setEditingProduct({...editingProduct, subtitleSpanish: e.target.value})} className="form-control" />
+                        </div>
+                        <div className="form-group">
+                          <label>Badge Text (Spanish)</label>
+                          <input type="text" value={editingProduct.badgeTextSpanish || ''} onChange={e => setEditingProduct({...editingProduct, badgeTextSpanish: e.target.value})} className="form-control" />
+                        </div>
+                      </div>
+
+                      <div className="form-group">
+                        <label>Description (Spanish)</label>
+                        <textarea rows="4" value={editingProduct.descriptionSpanish || ''} onChange={e => setEditingProduct({...editingProduct, descriptionSpanish: e.target.value})} className="form-control" style={{ resize: 'vertical' }}></textarea>
+                      </div>
                     </div>
 
                     <h3 style={{ marginTop: '1rem', marginBottom: '0.5rem', fontSize: '1.2rem' }}>Wholesale Pricing</h3>
@@ -1161,7 +1181,9 @@ function Admin() {
                       <h1 style={{ margin: 0 }}>Manage: {categories.find(c => c.id === activeTab.replace('products-', ''))?.title || activeTab.replace('products-', '')}</h1>
                       <button 
                         onClick={() => {
-                          setRenamingCategoryTitle(categories.find(c => c.id === activeTab.replace('products-', ''))?.title || '');
+                          const cat = categories.find(c => c.id === activeTab.replace('products-', ''));
+                          setRenamingCategoryTitle(cat?.title || '');
+                          setRenamingCategoryTitleSpanish(cat?.titleSpanish || '');
                           setRenamingCategory(true);
                         }} 
                         className="btn btn-outline" 
@@ -1211,8 +1233,16 @@ function Admin() {
                         type="text" 
                         value={renamingCategoryTitle}
                         onChange={(e) => setRenamingCategoryTitle(e.target.value)}
+                        placeholder="English Title"
                         style={{ padding: '0.5rem', fontSize: '1.5rem', fontWeight: 'bold', border: '1px solid #ccc', borderRadius: '4px', width: '300px' }}
                         autoFocus
+                      />
+                      <input 
+                        type="text" 
+                        value={renamingCategoryTitleSpanish}
+                        onChange={(e) => setRenamingCategoryTitleSpanish(e.target.value)}
+                        placeholder="Spanish Title"
+                        style={{ padding: '0.5rem', fontSize: '1.5rem', fontWeight: 'bold', border: '1px solid #ccc', borderRadius: '4px', width: '300px' }}
                       />
                       <button onClick={handleRenameCategory} disabled={loading} className="btn btn-primary" style={{ padding: '0.5rem 1rem' }}>{loading ? 'Saving...' : 'Save'}</button>
                       <button onClick={() => setRenamingCategory(false)} className="btn btn-outline" style={{ padding: '0.5rem 1rem' }}>Cancel</button>
@@ -1254,7 +1284,7 @@ function Admin() {
                         </div>
                       </td>
                       <td style={{ padding: '1rem', fontWeight: 'bold' }}>{product.name}</td>
-                      <td style={{ padding: '1rem' }}>{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{product.price?.toFixed(2) || '0.00'}</td>
+                      <td style={{ padding: '1rem' }}>€{product.price?.toFixed(2) || '0.00'}</td>
                       <td style={{ padding: '1rem', textAlign: 'right' }}>
                         <button onClick={() => setEditingProduct(product)} className="btn btn-outline" style={{ padding: '0.4rem 1rem', fontSize: '0.9rem' }}>Edit</button>
                       </td>

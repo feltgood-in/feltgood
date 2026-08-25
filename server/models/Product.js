@@ -13,6 +13,10 @@ const ProductSchema = new mongoose.Schema({
   specs: [String],
   images: [String],
   colors: [String],
+  nameSpanish: String,
+  subtitleSpanish: String,
+  badgeTextSpanish: String,
+  descriptionSpanish: String,
   pricing: {
     base: Number,
     tier5k: Number,

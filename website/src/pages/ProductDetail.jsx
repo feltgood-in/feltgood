@@ -4,17 +4,27 @@ import { useInquiry } from '../context/InquiryContext';
 import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { cld } from '../cloudinary';
+import { useLanguage } from '../context/LanguageContext';
 
 function ProductDetail() {
   const { id } = useParams();
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
   
   useEffect(() => {
     fetch('/api/products')
       .then(res => res.json())
-      .then(data => setProducts(data.products || []))
-      .catch(err => console.error(err));
+      .then(data => {
+        setProducts(data.products || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
   }, []);
+
 
   const product = products.find(p => p.id === id);
   const { addToInquiry, inquiryItems } = useInquiry();
@@ -28,15 +38,23 @@ function ProductDetail() {
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     } else {
-      alert("Please enter a quantity between 1 and 10000");
+      alert(language === 'es' ? "Por favor ingrese una cantidad entre 1 y 10000" : "Please enter a quantity between 1 and 10000");
     }
   };
+
+  if (loading) {
+    return (
+      <div style={{ height: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ color: 'var(--color-text-light)', letterSpacing: '2px' }}>{language === 'es' ? 'CARGANDO...' : 'LOADING...'}</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
       <div className="container section text-center">
-        <h2>Product not found</h2>
-        <Link to="/" className="btn" style={{marginTop: '2rem'}}>Return Home</Link>
+        <h2>{language === 'es' ? 'Producto no encontrado' : 'Product not found'}</h2>
+        <Link to="/" className="btn" style={{marginTop: '2rem'}}>{language === 'es' ? 'Volver al Inicio' : 'Return Home'}</Link>
       </div>
     );
   }
@@ -46,7 +64,7 @@ function ProductDetail() {
       <div className="container">
         
         <div className="breadcrumb">
-          <Link to="/">Collections</Link> / <span>{product.name}</span>
+          <Link to="/">{language === 'es' ? 'Colecciones' : 'Collections'}</Link> / <span>{language === 'es' && product.nameSpanish ? product.nameSpanish : product.name}</span>
         </div>
 
         <div className="product-grid">
@@ -71,18 +89,17 @@ function ProductDetail() {
           {/* Details & Pricing Section */}
           <div className="product-info">
             <div className="product-meta">
-              <span className="badge">Wholesale</span>
-
+              <span className="badge">{language === 'es' ? 'Mayorista' : 'Wholesale'}</span>
             </div>
-            <h1 className="product-title">{product.name}</h1>
-            <p className="product-subtitle">{product.subtitle}</p>
+            <h1 className="product-title">{language === 'es' && product.nameSpanish ? product.nameSpanish : product.name}</h1>
+            <p className="product-subtitle">{language === 'es' && product.subtitleSpanish ? product.subtitleSpanish : product.subtitle}</p>
             
             <div className="product-description">
-              <p>{product.description}</p>
+              <p>{language === 'es' && product.descriptionSpanish ? product.descriptionSpanish : product.description}</p>
             </div>
 
             <div className="product-specs">
-              <h3>Specifications</h3>
+              <h3>{language === 'es' ? 'Especificaciones' : 'Specifications'}</h3>
               <ul>
                 {product.specs.map((spec, idx) => (
                   <li key={idx}>{spec}</li>
@@ -92,19 +109,19 @@ function ProductDetail() {
 
             {/* Wholesale Pricing Tier Section */}
             <div className="pricing-section">
-              <h3>Wholesale Pricing</h3>
+              <h3>{language === 'es' ? 'Precios al por Mayor' : 'Wholesale Pricing'}</h3>
               <div className="pricing-tiers">
                 <div className="tier">
-                  <span className="tier-name">Base Rate</span>
-                  <span className="tier-price">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{product.pricing.base.toFixed(2)} <span>/ unit</span></span>
+                  <span className="tier-name">{language === 'es' ? 'Tarifa Base' : 'Base Rate'}</span>
+                  <span className="tier-price">€{product.pricing.base.toFixed(2)} <span>/ {language === 'es' ? 'unidad' : 'unit'}</span></span>
                 </div>
                 <div className="tier highlighted">
-                  <span className="tier-name">Bulk (5,000+ units)</span>
-                  <span className="tier-price">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{product.pricing.tier5k.toFixed(2)} <span>/ unit</span></span>
+                  <span className="tier-name">{language === 'es' ? 'Por Mayor (5,000+ unidades)' : 'Bulk (5,000+ units)'}</span>
+                  <span className="tier-price">€{product.pricing.tier5k.toFixed(2)} <span>/ {language === 'es' ? 'unidad' : 'unit'}</span></span>
                 </div>
                 <div className="tier highlighted">
-                  <span className="tier-name">Bulk (10,000+ units)</span>
-                  <span className="tier-price">{(!product.currency || product.currency === 'INR') ? '₹' : '$'}{product.pricing.tier10k.toFixed(2)} <span>/ unit</span></span>
+                  <span className="tier-name">{language === 'es' ? 'Por Mayor (10,000+ unidades)' : 'Bulk (10,000+ units)'}</span>
+                  <span className="tier-price">€{product.pricing.tier10k.toFixed(2)} <span>/ {language === 'es' ? 'unidad' : 'unit'}</span></span>
                 </div>
               </div>
             </div>
@@ -124,12 +141,12 @@ function ProductDetail() {
                   fontWeight: '600'
                 }}>
                   <span style={{ fontSize: '1.2rem', color: '#2ebf68' }}>✓</span>
-                  You already have {existingItem.quantity} of this item in your inquiry list. You can add more!
+                  {language === 'es' ? `Ya tiene ${existingItem.quantity} de este artículo en su lista. ¡Puede añadir más!` : `You already have ${existingItem.quantity} of this item in your inquiry list. You can add more!`}
                 </div>
               )}
 
               <div style={{ marginBottom: '1.5rem' }}>
-                <label htmlFor="qty" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: 'var(--color-primary)' }}>Quantity (1-10000):</label>
+                <label htmlFor="qty" style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 600, color: 'var(--color-primary)' }}>{language === 'es' ? 'Cantidad (1-10000):' : 'Quantity (1-10000):'}</label>
                 <input 
                   type="number" 
                   id="qty" 
@@ -148,11 +165,11 @@ function ProductDetail() {
                   }} 
                 />
               </div>
-              <button onClick={handleAddToList} className="btn btn-full">Add to Inquiry List</button>
+              <button onClick={handleAddToList} className="btn btn-full">{language === 'es' ? 'Añadir a la Lista de Consultas' : 'Add to Inquiry List'}</button>
               
               {showSuccess && (
                 <div style={{ marginTop: '1rem', color: 'var(--color-secondary)', fontWeight: 600, textAlign: 'center' }}>
-                  Added {quantity} items to your list!
+                  {language === 'es' ? `¡Se añadieron ${quantity} artículos a su lista!` : `Added ${quantity} items to your list!`}
                 </div>
               )}
             </div>
