@@ -5,6 +5,7 @@ import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { cld } from '../cloudinary';
 import { useLanguage } from '../context/LanguageContext';
+import SEO from '../components/SEO';
 
 function ProductDetail() {
   const { id } = useParams();
@@ -61,6 +62,11 @@ function ProductDetail() {
 
   return (
     <div className="product-detail animate-fade-in">
+      <SEO 
+        title={language === 'es' && product.nameSpanish ? product.nameSpanish : product.name} 
+        description={language === 'es' && product.descriptionSpanish ? product.descriptionSpanish : product.description} 
+        url={`/product/${product.id}`}
+      />
       <div className="container">
         
         <div className="breadcrumb">

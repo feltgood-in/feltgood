@@ -6,6 +6,7 @@ import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { cld } from '../cloudinary';
 import { useLanguage } from '../context/LanguageContext';
+import SEO from '../components/SEO';
 
 function ItemList() {
   const { inquiryItems, removeFromInquiry, getTotalItems, clearInquiry } = useInquiry();
@@ -17,8 +18,14 @@ function ItemList() {
   const navigate = useNavigate();
 
   return (
-    <div className="item-list-page animate-fade-in section container">
-      <div className="text-center" style={{ marginBottom: '3rem' }}>
+    <>
+      <SEO 
+        title={language === 'es' ? 'Lista de Consultas' : 'Inquiry List'} 
+        description={language === 'es' ? 'Revise los artículos de su consulta' : 'Review your inquiry items'} 
+        url="/item-list"
+      />
+      <div className="item-list-page animate-fade-in section container">
+        <div className="text-center" style={{ marginBottom: '3rem' }}>
         <h1 className="section-title">{language === 'es' ? 'Su Lista de Consultas' : 'Your Inquiry List'}</h1>
         <p className="section-subtitle">{language === 'es' ? 'Revise los artículos seleccionados antes de proceder a contactarnos.' : 'Review your selected items before proceeding to contact us.'}</p>
       </div>
@@ -198,6 +205,7 @@ function ItemList() {
         document.body
       )}
     </div>
+    </>
   );
 }
 

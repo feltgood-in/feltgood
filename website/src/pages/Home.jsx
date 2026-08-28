@@ -4,6 +4,7 @@ import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { useLanguage } from '../context/LanguageContext';
 import { cld } from '../cloudinary';
+import SEO from '../components/SEO';
 
 function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -89,6 +90,7 @@ function Home() {
 
   return (
     <>
+      <SEO url="/" />
       {/* Top Banner Carousel */}
       <section 
         className="banner-carousel"

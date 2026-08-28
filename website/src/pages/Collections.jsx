@@ -5,6 +5,7 @@ import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { cld } from '../cloudinary';
 import { useLanguage } from '../context/LanguageContext';
+import SEO from '../components/SEO';
 
 function Collections() {
   const { addToInquiry } = useInquiry();
@@ -93,6 +94,10 @@ function Collections() {
 
   return (
     <>
+    <SEO 
+      title={language === 'es' && currentCategoryObj?.titleSpanish ? currentCategoryObj.titleSpanish : currentCategoryObj?.title || (language === 'es' ? 'Colecciones' : 'Collections')} 
+      url={`/collections${selectedCategory !== 'all' ? `?category=${selectedCategory}` : ''}`}
+    />
     <div className="collections-page container section animate-fade-in">
       
       {/* Top Bar matching image */}

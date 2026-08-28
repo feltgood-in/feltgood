@@ -328,6 +328,49 @@ app.delete('/api/admin/users/:id', async (req, res) => {
   }
 });
 
+// SEO Routes
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const products = await Product.find({}, 'id');
+    const categories = await Category.find({}, 'id');
+
+    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+    
+    const baseUrl = 'https://feltgood.in';
+
+    // Static pages
+    const staticPages = ['/', '/collections', '/contact', '/item-list'];
+    staticPages.forEach(page => {
+      xml += `  <url>\n    <loc>${baseUrl}${page}</loc>\n    <priority>${page === '/' ? '1.0' : '0.8'}</priority>\n  </url>\n`;
+    });
+
+    // Categories
+    categories.forEach(cat => {
+      xml += `  <url>\n    <loc>${baseUrl}/collections?category=${cat.id}</loc>\n    <priority>0.9</priority>\n  </url>\n`;
+    });
+
+    // Products
+    products.forEach(prod => {
+      xml += `  <url>\n    <loc>${baseUrl}/product/${prod.id}</loc>\n    <priority>0.7</priority>\n  </url>\n`;
+    });
+
+    xml += '</urlset>';
+
+    res.header('Content-Type', 'application/xml');
+    res.send(xml);
+  } catch (err) {
+    console.error(err);
+    res.status(500).end();
+  }
+});
+
+app.get('/robots.txt', (req, res) => {
+  const robots = `User-agent: *\nAllow: /\nSitemap: https://feltgood.in/sitemap.xml\n`;
+  res.header('Content-Type', 'text/plain');
+  res.send(robots);
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

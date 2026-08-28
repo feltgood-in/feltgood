@@ -3,6 +3,7 @@ import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { cld } from '../cloudinary';
 import { useLanguage } from '../context/LanguageContext';
+import SEO from '../components/SEO';
 
 function Contact() {
   const { language } = useLanguage();
@@ -47,8 +48,14 @@ function Contact() {
   };
 
   return (
-    <div className="inquire-page animate-fade-in">
-      <div className="container" style={{ maxWidth: '1000px', padding: '4rem 1rem' }}>
+    <>
+      <SEO 
+        title={language === 'es' ? 'Contacto' : 'Contact'} 
+        description={language === 'es' ? 'Póngase en contacto con nosotros para consultas al por mayor' : 'Contact us for wholesale inquiries'} 
+        url="/contact"
+      />
+      <div className="inquire-page animate-fade-in">
+        <div className="container" style={{ maxWidth: '1000px', padding: '4rem 1rem' }}>
         
         <div className="inquire-wrapper">
           {/* Left Decorative Side */}
@@ -139,7 +146,8 @@ function Contact() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 

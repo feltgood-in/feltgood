@@ -21,10 +21,11 @@
     "mongoose": "^9.9.1",
     "multer": "^2.2.0",
     "nodemailer": "^9.0.5",
-    "streamifier": "^0.1.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-router-dom": "^7.18.2"
+    "react-helmet-async": "^3.0.0",
+    "react-router-dom": "^7.18.2",
+    "streamifier": "^0.1.1"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",
