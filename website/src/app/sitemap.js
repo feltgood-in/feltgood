@@ -18,6 +18,10 @@ export default async function sitemap() {
   // Fetch dynamic products to add to sitemap
   let productRoutes = [];
   try {
+    if (!process.env.API_URL && process.env.VERCEL) {
+      console.log('Skipping product sitemap generation on Vercel build because API_URL is not set.');
+      return staticRoutes;
+    }
     const apiUrl = process.env.API_URL || 'http://localhost:5000';
     const res = await fetch(`${apiUrl}/api/products`);
     if (res.ok) {

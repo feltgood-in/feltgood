@@ -5,6 +5,9 @@ export async function generateMetadata({ params }) {
   const { id } = params;
   try {
     // In server components, fetch requires absolute URLs.
+    if (!process.env.API_URL && process.env.VERCEL) {
+      throw new Error('Skipping product metadata fetch on Vercel build because API_URL is not set.');
+    }
     const apiUrl = process.env.API_URL || 'http://localhost:5000';
     const res = await fetch(`${apiUrl}/api/products`);
     
@@ -52,6 +55,9 @@ export default async function ProductPage({ params }) {
   let product = null;
   
   try {
+    if (!process.env.API_URL && process.env.VERCEL) {
+      throw new Error('Skipping product JSON-LD fetch on Vercel build because API_URL is not set.');
+    }
     const apiUrl = process.env.API_URL || 'http://localhost:5000';
     const res = await fetch(`${apiUrl}/api/products`);
     if (res.ok) {
