@@ -1,23 +1,15 @@
-'use client';
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
-  const [language, setLanguageState] = useState('es');
-
-  useEffect(() => {
-    const saved = localStorage.getItem('language');
-    if (saved) {
-      setLanguageState(saved);
-    }
-  }, []);
+  const [language, setLanguageState] = useState(() => {
+    return localStorage.getItem('language') || 'es';
+  });
 
   const setLanguage = (lang) => {
     setLanguageState(lang);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('language', lang);
-    }
+    localStorage.setItem('language', lang);
   };
 
   const toggleLanguage = () => {

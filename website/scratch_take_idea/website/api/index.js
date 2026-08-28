@@ -33,7 +33,7 @@ const AdminUser = require('./models/AdminUser');
 
 // Middleware
 app.use(cors()); // Allow cross-origin requests from React
-app.use(express.json({ limit: '50mb' })); // Parse JSON body
+app.use(express.json()); // Parse JSON body
 
 // Cloudinary Configuration
 cloudinary.config({ 
@@ -136,23 +136,9 @@ app.post('/api/inquiry', async (req, res) => {
 });
 
 // Endpoint to upload an image to Cloudinary (Admin Panel)
-app.post('/api/upload', upload.single('image'), async (req, res) => {
-  console.log("Upload endpoint hit. req.body:", req.body);
-  fs.appendFileSync('cloudinary_debug.log', 'Upload hit! req.body: ' + JSON.stringify(req.body) + '\\n');
+app.post('/api/upload', upload.single('image'), (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, message: 'No image file provided.' });
-  }
-
-  // Auto-delete old image if provided (skip sample images)
-  if (req.body.oldImage && typeof req.body.oldImage === 'string' && !req.body.oldImage.startsWith('cld-sample')) {
-    try {
-      const destroyResult = await cloudinary.uploader.destroy(req.body.oldImage, { invalidate: true });
-      console.log(`Cloudinary destroy result for ${req.body.oldImage}:`, destroyResult);
-      fs.appendFileSync('cloudinary_debug.log', `Destroyed: ${req.body.oldImage}, Result: ${JSON.stringify(destroyResult)}\n`);
-    } catch (err) {
-      console.error('Failed to delete old image from Cloudinary:', err);
-      // We don't fail the upload if delete fails, just log it.
-    }
   }
 
   // Upload image to Cloudinary via stream
@@ -178,9 +164,6 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
 // Database Routes (MongoDB)
 app.get('/api/homepage', async (req, res) => {
   try {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
     const data = await Homepage.findOne();
     res.json(data || {});
   } catch (error) {
@@ -198,14 +181,18 @@ app.put('/api/homepage', async (req, res) => {
   }
 });
 
+// In-memory cache for products to speed up storefront load times
+let productCache = null;
+
 app.get('/api/products', async (req, res) => {
   try {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
+    if (productCache) {
+      return res.json(productCache);
+    }
     const categories = await Category.find();
     const products = await Product.find();
-    res.json({ categories, products });
+    productCache = { categories, products };
+    res.json(productCache);
   } catch (error) {
     res.status(500).json({ message: "Error fetching products" });
   }
@@ -225,9 +212,42 @@ app.put('/api/products', async (req, res) => {
       if (products.length > 0) await Product.insertMany(products);
     }
     
+    productCache = null; // Invalidate cache when admin updates products
+    
     res.json({ success: true, message: "Products updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error updating database" });
+  }
+});
+
+app.delete('/api/products/:id', async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ success: false, message: "Product not found" });
+    }
+
+    // Delete images from Cloudinary
+    if (product.image) {
+      await cloudinary.uploader.destroy(product.image).catch(err => console.error('Cloudinary delete error:', err));
+    }
+    if (product.images && product.images.length > 0) {
+      for (const img of product.images) {
+        if (img && img !== product.image) {
+          await cloudinary.uploader.destroy(img).catch(err => console.error('Cloudinary delete error:', err));
+        }
+      }
+    }
+
+    // Delete from MongoDB
+    await Product.findByIdAndDelete(req.params.id);
+    
+    productCache = null; // Invalidate cache
+    
+    res.json({ success: true, message: "Product deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Error deleting product" });
   }
 });
 
@@ -241,27 +261,21 @@ app.get('/api/messages', async (req, res) => {
   }
 });
 
+app.put('/api/messages/:id/read', async (req, res) => {
+  try {
+    await Message.findByIdAndUpdate(req.params.id, { read: true });
+    res.json({ success: true, message: "Message marked as read" });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating message" });
+  }
+});
+
 app.delete('/api/messages/:id', async (req, res) => {
   try {
     await Message.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: "Message deleted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Error deleting message" });
-  }
-});
-
-app.put('/api/messages/:id/read', async (req, res) => {
-  try {
-    const message = await Message.findById(req.params.id);
-    if (message) {
-      message.read = true;
-      await message.save();
-      res.json({ success: true, message: "Message marked as read" });
-    } else {
-      res.status(404).json({ success: false, message: "Message not found" });
-    }
-  } catch (error) {
-    res.status(500).json({ success: false, message: "Error updating message" });
   }
 });
 
@@ -331,49 +345,4 @@ app.delete('/api/admin/users/:id', async (req, res) => {
   }
 });
 
-// SEO Routes
-app.get('/sitemap.xml', async (req, res) => {
-  try {
-    const products = await Product.find({}, 'id');
-    const categories = await Category.find({}, 'id');
-
-    let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-    
-    const baseUrl = 'https://feltgood.in';
-
-    // Static pages
-    const staticPages = ['/', '/collections', '/contact', '/item-list'];
-    staticPages.forEach(page => {
-      xml += `  <url>\n    <loc>${baseUrl}${page}</loc>\n    <priority>${page === '/' ? '1.0' : '0.8'}</priority>\n  </url>\n`;
-    });
-
-    // Categories
-    categories.forEach(cat => {
-      xml += `  <url>\n    <loc>${baseUrl}/collections?category=${cat.id}</loc>\n    <priority>0.9</priority>\n  </url>\n`;
-    });
-
-    // Products
-    products.forEach(prod => {
-      xml += `  <url>\n    <loc>${baseUrl}/product/${prod.id}</loc>\n    <priority>0.7</priority>\n  </url>\n`;
-    });
-
-    xml += '</urlset>';
-
-    res.header('Content-Type', 'application/xml');
-    res.send(xml);
-  } catch (err) {
-    console.error(err);
-    res.status(500).end();
-  }
-});
-
-app.get('/robots.txt', (req, res) => {
-  const robots = `User-agent: *\nAllow: /\nSitemap: https://feltgood.in/sitemap.xml\n`;
-  res.header('Content-Type', 'text/plain');
-  res.send(robots);
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+module.exports = app;

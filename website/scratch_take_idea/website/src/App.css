@@ -47,7 +47,7 @@
 
 .brand-name {
   font-family: var(--font-sans);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 1.8rem;
   letter-spacing: 6px;
   line-height: 1;
@@ -60,7 +60,7 @@
   letter-spacing: 1.5px;
   color: var(--color-accent);
   margin-top: 0.3rem;
-  font-weight: 700;
+  font-weight: 800;
 }
 
 .brand-tagline .heart {

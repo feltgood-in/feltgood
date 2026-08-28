@@ -1,4 +1,3 @@
-'use client';
 import React, { createContext, useState, useContext } from 'react';
 
 const InquiryContext = createContext();
@@ -6,25 +5,19 @@ const InquiryContext = createContext();
 export const useInquiry = () => useContext(InquiryContext);
 
 export const InquiryProvider = ({ children }) => {
-  const [inquiryItems, setInquiryItems] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  React.useEffect(() => {
+  const [inquiryItems, setInquiryItems] = useState(() => {
+    // Load initial state from localStorage if it exists
     const saved = localStorage.getItem('inquiryItems');
     if (saved) {
-      try {
-        setInquiryItems(JSON.parse(saved));
-      } catch (e) {}
+      return JSON.parse(saved);
     }
-    setIsLoaded(true);
-  }, []);
+    return [];
+  });
 
   // Sync to localStorage whenever items change
   React.useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem('inquiryItems', JSON.stringify(inquiryItems));
-    }
-  }, [inquiryItems, isLoaded]);
+    localStorage.setItem('inquiryItems', JSON.stringify(inquiryItems));
+  }, [inquiryItems]);
 
   const addToInquiry = (product, quantity) => {
     setInquiryItems(prevItems => {
