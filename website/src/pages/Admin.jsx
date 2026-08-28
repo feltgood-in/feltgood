@@ -1276,6 +1276,44 @@ function Admin() {
                       <label>Description</label>
                       <textarea rows="4" value={editingProduct.description || ''} onChange={e => setEditingProduct({...editingProduct, description: e.target.value})} className="form-control" style={{ resize: 'vertical' }}></textarea>
                     </div>
+                    
+                    <div className="form-group" style={{ display: 'flex', flexDirection: 'column' }}>
+                      <label>Specifications</label>
+                      {(editingProduct.specs || []).map((spec, index) => (
+                        <div key={index} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                          <input 
+                            type="text" 
+                            value={spec} 
+                            onChange={e => {
+                              const newSpecs = [...(editingProduct.specs || [])];
+                              newSpecs[index] = e.target.value;
+                              setEditingProduct({...editingProduct, specs: newSpecs});
+                            }} 
+                            className="form-control" 
+                            placeholder="e.g. 100% Wool Felt"
+                          />
+                          <button 
+                            type="button"
+                            onClick={() => {
+                              const newSpecs = (editingProduct.specs || []).filter((_, i) => i !== index);
+                              setEditingProduct({...editingProduct, specs: newSpecs});
+                            }}
+                            className="btn btn-outline"
+                            style={{ padding: '0.4rem 0.8rem', color: '#d93025', borderColor: '#d93025' }}
+                          >
+                            X
+                          </button>
+                        </div>
+                      ))}
+                      <button 
+                        type="button"
+                        onClick={() => setEditingProduct({...editingProduct, specs: [...(editingProduct.specs || []), '']})} 
+                        className="btn btn-outline" 
+                        style={{ alignSelf: 'flex-start', padding: '0.4rem 1rem', fontSize: '0.9rem', marginTop: '0.5rem' }}
+                      >
+                        + Add Specification
+                      </button>
+                    </div>
 
                     {/* Gap / Section header for Spanish */}
                     <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid #eaeaea', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -1302,6 +1340,44 @@ function Admin() {
                       <div className="form-group">
                         <label>Description (Spanish)</label>
                         <textarea rows="4" value={editingProduct.descriptionSpanish || ''} onChange={e => setEditingProduct({...editingProduct, descriptionSpanish: e.target.value})} className="form-control" style={{ resize: 'vertical' }}></textarea>
+                      </div>
+
+                      <div className="form-group" style={{ display: 'flex', flexDirection: 'column' }}>
+                        <label>Specifications (Spanish)</label>
+                        {(editingProduct.specsSpanish || []).map((spec, index) => (
+                          <div key={index} style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                            <input 
+                              type="text" 
+                              value={spec} 
+                              onChange={e => {
+                                const newSpecs = [...(editingProduct.specsSpanish || [])];
+                                newSpecs[index] = e.target.value;
+                                setEditingProduct({...editingProduct, specsSpanish: newSpecs});
+                              }} 
+                              className="form-control" 
+                              placeholder="e.g. 100% Fieltro de lana"
+                            />
+                            <button 
+                              type="button"
+                              onClick={() => {
+                                const newSpecs = (editingProduct.specsSpanish || []).filter((_, i) => i !== index);
+                                setEditingProduct({...editingProduct, specsSpanish: newSpecs});
+                              }}
+                              className="btn btn-outline"
+                              style={{ padding: '0.4rem 0.8rem', color: '#d93025', borderColor: '#d93025' }}
+                            >
+                              X
+                            </button>
+                          </div>
+                        ))}
+                        <button 
+                          type="button"
+                          onClick={() => setEditingProduct({...editingProduct, specsSpanish: [...(editingProduct.specsSpanish || []), '']})} 
+                          className="btn btn-outline" 
+                          style={{ alignSelf: 'flex-start', padding: '0.4rem 1rem', fontSize: '0.9rem', marginTop: '0.5rem' }}
+                        >
+                          + Add Specification
+                        </button>
                       </div>
                     </div>
 

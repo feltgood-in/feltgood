@@ -101,30 +101,12 @@ function ProductDetail() {
             <div className="product-specs">
               <h3>{language === 'es' ? 'Especificaciones' : 'Specifications'}</h3>
               <ul>
-                {product.specs.map((spec, idx) => (
+                {(language === 'es' && product.specsSpanish?.length > 0 ? product.specsSpanish : (product.specs || [])).map((spec, idx) => (
                   <li key={idx}>{spec}</li>
                 ))}
               </ul>
             </div>
 
-            {/* Wholesale Pricing Tier Section */}
-            <div className="pricing-section">
-              <h3>{language === 'es' ? 'Precios al por Mayor' : 'Wholesale Pricing'}</h3>
-              <div className="pricing-tiers">
-                <div className="tier">
-                  <span className="tier-name">{language === 'es' ? 'Tarifa Base' : 'Base Rate'}</span>
-                  <span className="tier-price">€{product.pricing.base.toFixed(2)} <span>/ {language === 'es' ? 'unidad' : 'unit'}</span></span>
-                </div>
-                <div className="tier highlighted">
-                  <span className="tier-name">{language === 'es' ? 'Por Mayor (5,000+ unidades)' : 'Bulk (5,000+ units)'}</span>
-                  <span className="tier-price">€{product.pricing.tier5k.toFixed(2)} <span>/ {language === 'es' ? 'unidad' : 'unit'}</span></span>
-                </div>
-                <div className="tier highlighted">
-                  <span className="tier-name">{language === 'es' ? 'Por Mayor (10,000+ unidades)' : 'Bulk (10,000+ units)'}</span>
-                  <span className="tier-price">€{product.pricing.tier10k.toFixed(2)} <span>/ {language === 'es' ? 'unidad' : 'unit'}</span></span>
-                </div>
-              </div>
-            </div>
 
             <div className="product-actions" style={{ marginTop: '2rem' }}>
               

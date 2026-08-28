@@ -16,9 +16,7 @@ function Collections() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [viewMode, setViewMode] = useState('4');
-  const [sortOrder, setSortOrder] = useState('low-to-high');
-  const [minPrice, setMinPrice] = useState('');
-  const [maxPrice, setMaxPrice] = useState('');
+  const [sortOrder, setSortOrder] = useState('name-asc');
   const [activeSubcategory, setActiveSubcategory] = useState('all');
 
   const [loading, setLoading] = useState(true);
@@ -55,20 +53,12 @@ function Collections() {
   }
   const hasSubcategories = currentCategoryObj?.subcategories && currentCategoryObj.subcategories.length > 0;
 
-  // Apply price filter
-  if (minPrice !== '') {
-    displayedProducts = displayedProducts.filter(p => p.price >= Number(minPrice));
-  }
-  if (maxPrice !== '') {
-    displayedProducts = displayedProducts.filter(p => p.price <= Number(maxPrice));
-  }
-
   // Sort products
   displayedProducts.sort((a, b) => {
-    const priceA = a.price || 0;
-    const priceB = b.price || 0;
-    if (sortOrder === 'low-to-high') return priceA - priceB;
-    if (sortOrder === 'high-to-low') return priceB - priceA;
+    const nameA = (a.name || '').toLowerCase();
+    const nameB = (b.name || '').toLowerCase();
+    if (sortOrder === 'name-asc') return nameA.localeCompare(nameB);
+    if (sortOrder === 'name-desc') return nameB.localeCompare(nameA);
     return 0;
   });
 
@@ -126,15 +116,9 @@ function Collections() {
         </div>
         
         <div className="collections-filters-container">
-          <div className="price-inputs" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
-            <span style={{ fontWeight: 'bold', color: 'var(--color-primary)' }}>{language === 'es' ? 'Precio:' : 'Price:'}</span>
-            <input type="number" placeholder="0" value={minPrice} onChange={e => setMinPrice(e.target.value)} min="0" style={{ width: '60px', padding: '0.4rem', border: '1px solid #E5DED0', borderRadius: '6px' }} />
-            <span>-</span>
-            <input type="number" placeholder="999" value={maxPrice} onChange={e => setMaxPrice(e.target.value)} min="0" style={{ width: '60px', padding: '0.4rem', border: '1px solid #E5DED0', borderRadius: '6px' }} />
-          </div>
           <select className="sort-dropdown" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ padding: '0.5rem 2rem 0.5rem 1rem', border: '1px solid #E5DED0', borderRadius: '6px', background: 'white', cursor: 'pointer', appearance: 'none', backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.7rem center', backgroundSize: '1em' }}>
-            <option value="low-to-high">{language === 'es' ? 'Precio, menor a mayor' : 'Price, low to high'}</option>
-            <option value="high-to-low">{language === 'es' ? 'Precio, mayor a menor' : 'Price, high to low'}</option>
+            <option value="name-asc">{language === 'es' ? 'Nombre, A-Z' : 'Name, A-Z'}</option>
+            <option value="name-desc">{language === 'es' ? 'Nombre, Z-A' : 'Name, Z-A'}</option>
           </select>
         </div>
       </div>
@@ -216,10 +200,7 @@ function Collections() {
                         <div className="card-content" style={{ padding: '1rem' }}>
 
                           <h3 className="product-title">{language === 'es' && product.nameSpanish ? product.nameSpanish : product.name}</h3>
-                          <div className="product-prices">
-                            {product.oldPrice > 0 && <span className="price-old">€{(product.oldPrice || 0).toFixed(2)}</span>}
-                            <span className="price-new">€{(product.price || 0).toFixed(2)}</span>
-                          </div>
+
                             <button 
                               className="btn btn-outline add-to-cart-btn"
                               onClick={(e) => handleAddToCart(e, product)}
@@ -262,10 +243,7 @@ function Collections() {
                           <div className="card-content" style={{ padding: '1rem' }}>
 
                             <h3 className="product-title">{language === 'es' && product.nameSpanish ? product.nameSpanish : product.name}</h3>
-                            <div className="product-prices">
-                              {product.oldPrice > 0 && <span className="price-old">€{(product.oldPrice || 0).toFixed(2)}</span>}
-                              <span className="price-new">€{(product.price || 0).toFixed(2)}</span>
-                            </div>
+
                               <button 
                                 className="btn btn-outline add-to-cart-btn"
                                 onClick={(e) => handleAddToCart(e, product)}
@@ -305,10 +283,7 @@ function Collections() {
                 <div className="card-content" style={{ padding: '1rem' }}>
 
                   <h3 className="product-title">{language === 'es' && product.nameSpanish ? product.nameSpanish : product.name}</h3>
-                  <div className="product-prices">
-                    {product.oldPrice > 0 && <span className="price-old">€{(product.oldPrice || 0).toFixed(2)}</span>}
-                    <span className="price-new">€{(product.price || 0).toFixed(2)}</span>
-                  </div>
+
                     <button 
                       className="btn btn-outline add-to-cart-btn"
                       onClick={(e) => handleAddToCart(e, product)}

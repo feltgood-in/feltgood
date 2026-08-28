@@ -117,10 +117,7 @@ function Search() {
               </div>
               <div className="card-content" style={{ padding: '1rem' }}>
                 <h3 className="product-title">{language === 'es' && product.nameSpanish ? product.nameSpanish : product.name}</h3>
-                <div className="product-prices">
-                  {product.oldPrice > 0 && <span className="price-old">€{(product.oldPrice || 0).toFixed(2)}</span>}
-                  <span className="price-new">€{(product.price || 0).toFixed(2)}</span>
-                </div>
+
                 <button 
                   className="btn btn-outline add-to-cart-btn"
                   onClick={(e) => handleAddToCart(e, product)}
