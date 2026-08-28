@@ -144,7 +144,8 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
   // Auto-delete old image if provided (skip sample images)
   if (req.body.oldImage && typeof req.body.oldImage === 'string' && !req.body.oldImage.startsWith('cld-sample')) {
     try {
-      await cloudinary.uploader.destroy(req.body.oldImage);
+      const destroyResult = await cloudinary.uploader.destroy(req.body.oldImage, { invalidate: true });
+      console.log(`Cloudinary destroy result for ${req.body.oldImage}:`, destroyResult);
     } catch (err) {
       console.error('Failed to delete old image from Cloudinary:', err);
       // We don't fail the upload if delete fails, just log it.

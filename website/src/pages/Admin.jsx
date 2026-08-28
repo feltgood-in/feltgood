@@ -1254,12 +1254,6 @@ function Admin() {
                       )}
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
-                      <div className="form-group">
-                        <label>Old Price (Strikethrough)</label>
-                        <input type="number" step="0.01" value={editingProduct.oldPrice || ''} onChange={e => setEditingProduct({...editingProduct, oldPrice: e.target.value ? parseFloat(e.target.value) : undefined})} className="form-control" placeholder="Leave empty to hide" />
-                      </div>
-                    </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem' }}>
                       <div className="form-group">
@@ -1381,21 +1375,7 @@ function Admin() {
                       </div>
                     </div>
 
-                    <h3 style={{ marginTop: '1rem', marginBottom: '0.5rem', fontSize: '1.2rem' }}>Wholesale Pricing</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem', background: '#f9f9f9', padding: '1rem', borderRadius: '8px', border: '1px solid #eaeaea' }}>
-                      <div className="form-group">
-                        <label>Base Tier</label>
-                        <input type="number" step="0.01" value={editingProduct.pricing?.base || 0} onChange={e => setEditingProduct({...editingProduct, price: parseFloat(e.target.value), pricing: {...editingProduct.pricing, base: parseFloat(e.target.value)}})} className="form-control" />
-                      </div>
-                      <div className="form-group">
-                        <label>5k+ Tier</label>
-                        <input type="number" step="0.01" value={editingProduct.pricing?.tier5k || 0} onChange={e => setEditingProduct({...editingProduct, pricing: {...editingProduct.pricing, tier5k: parseFloat(e.target.value)}})} className="form-control" />
-                      </div>
-                      <div className="form-group">
-                        <label>10k+ Tier</label>
-                        <input type="number" step="0.01" value={editingProduct.pricing?.tier10k || 0} onChange={e => setEditingProduct({...editingProduct, pricing: {...editingProduct.pricing, tier10k: parseFloat(e.target.value)}})} className="form-control" />
-                      </div>
-                    </div>
+
                   </div>
                 </div>
               </div>
@@ -1553,7 +1533,6 @@ function Admin() {
                         <th style={{ padding: '1rem', width: '90px' }}>Item #</th>
                         <th style={{ padding: '1rem', width: '80px' }}>Image</th>
                         <th style={{ padding: '1rem' }}>Name</th>
-                        <th style={{ padding: '1rem' }}>Price</th>
                         <th style={{ padding: '1rem', textAlign: 'right' }}>Actions</th>
                       </tr>
                     </thead>
@@ -1576,7 +1555,6 @@ function Admin() {
                             </div>
                           </td>
                           <td style={{ padding: '1rem', fontWeight: 'bold' }}>{product.name}</td>
-                          <td style={{ padding: '1rem' }}>€{product.price?.toFixed(2) || '0.00'}</td>
                           <td style={{ padding: '1rem', textAlign: 'right' }}>
                             <button onClick={() => setEditingProduct(product)} className="btn btn-outline" style={{ padding: '0.4rem 1rem', fontSize: '0.9rem' }}>Edit</button>
                           </td>
@@ -1584,7 +1562,7 @@ function Admin() {
                       ))}
                       {productList.length === 0 && (
                         <tr>
-                          <td colSpan="5" style={{ padding: '2rem', textAlign: 'center', color: '#888' }}>No products found in this section.</td>
+                          <td colSpan="4" style={{ padding: '2rem', textAlign: 'center', color: '#888' }}>No products found in this section.</td>
                         </tr>
                       )}
                     </tbody>
