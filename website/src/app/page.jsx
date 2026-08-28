@@ -168,11 +168,13 @@ function Home() {
       </section>
 
       {/* Collections Section */}
-      {loading ? (
+      {loading && (
         <div style={{ height: '30vh', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6rem' }}>
           <p style={{ color: 'var(--color-text-light)', letterSpacing: '2px', animation: 'pulse 1.5s infinite' }}>{language === 'es' ? 'CARGANDO COLECCIONES...' : 'LOADING COLLECTIONS...'}</p>
         </div>
-      ) : (
+      )}
+      
+      {!loading && (
         <section id="collections" className="section container">
         {homepageData && categories.map((category) => {
           const featuredIds = homepageData.categoryFeaturedItems?.[category.id] || [];
