@@ -40,7 +40,7 @@ function Home() {
     { id: 4, color: "bg-sand", title: language === 'es' ? "Esenciales de Madera" : "Woodcrafted Essentials" }
   ];
 
-  const slides = homepageData ? homepageData.banners : defaultSlides;
+  const slides = (homepageData && homepageData.banners) ? homepageData.banners : defaultSlides;
 
   useEffect(() => {
     const timer = setInterval(() => {
