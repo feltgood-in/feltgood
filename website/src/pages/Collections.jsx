@@ -15,12 +15,17 @@ function Collections() {
   
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [viewMode, setViewMode] = useState('3');
+  const [viewMode, setViewMode] = useState('4');
   const [sortOrder, setSortOrder] = useState('low-to-high');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
+  const [activeSubcategory, setActiveSubcategory] = useState('all');
 
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setActiveSubcategory('all');
+  }, [selectedCategory]);
 
   useEffect(() => {
     fetch('/api/products')
@@ -39,14 +44,16 @@ function Collections() {
 
   // Filter products based on selected category
   let displayedProducts = [];
+  let currentCategoryObj = null;
   if (selectedCategory === 'all') {
     displayedProducts = [...products];
   } else {
-    const cat = categories.find(c => c.id === selectedCategory);
-    if (cat) {
+    currentCategoryObj = categories.find(c => c.id === selectedCategory);
+    if (currentCategoryObj) {
       displayedProducts = products.filter(p => p.categoryId === selectedCategory);
     }
   }
+  const hasSubcategories = currentCategoryObj?.subcategories && currentCategoryObj.subcategories.length > 0;
 
   // Apply price filter
   if (minPrice !== '') {
@@ -132,45 +139,186 @@ function Collections() {
         </div>
       </div>
 
+      {hasSubcategories && (
+        <div className="subcategories-nav" style={{ overflowX: 'auto', whiteSpace: 'nowrap', marginBottom: '2rem', paddingBottom: '0.5rem', display: 'flex', gap: '1rem', borderBottom: '1px solid #eee', scrollbarWidth: 'none' }}>
+          <button
+            onClick={() => setActiveSubcategory('all')}
+            style={{ border: 'none', cursor: 'pointer', color: activeSubcategory === 'all' ? 'white' : '#333', fontWeight: 'bold', padding: '0.5rem 1rem', background: activeSubcategory === 'all' ? 'var(--color-primary)' : '#f5f5f5', borderRadius: '20px', fontSize: '0.9rem', transition: '0.2s' }}
+          >
+            {language === 'es' ? 'Todos' : 'All'}
+          </button>
+          {currentCategoryObj.subcategories.map(subcat => (
+            <button 
+              key={subcat.id} 
+              onClick={() => setActiveSubcategory(subcat.id)} 
+              style={{ border: 'none', cursor: 'pointer', color: activeSubcategory === subcat.id ? 'white' : '#333', fontWeight: 'bold', padding: '0.5rem 1rem', background: activeSubcategory === subcat.id ? 'var(--color-primary)' : '#f5f5f5', borderRadius: '20px', fontSize: '0.9rem', transition: '0.2s' }}
+            >
+              {language === 'es' && subcat.nameSpanish ? subcat.nameSpanish : subcat.name}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="collections-layout" style={{ display: 'block' }}>
 
         {/* Product Grid */}
-        <div className={`collections-product-grid grid-${viewMode}`}>
-          {displayedProducts.map(product => (
-            <Link to={`/product/${product.id}`} key={product.id} className="card product-card-filter">
-              <div className={`card-image ${product.color}`} style={{ aspectRatio: '1 / 1', height: 'auto', position: 'relative' }}>
-                {product.image ? (
-                  <AdvancedImage 
-                    cldImg={cld.image(product.image).resize(fill().width(300).height(300)).format('auto').quality('auto')} 
-                    plugins={[lazyload(), placeholder({mode: 'blur'})]}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
-                ) : (
-                  <div style={{ width: '100%', height: '100%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>{language === 'es' ? 'Sin Imagen' : 'No Image'}</div>
-                )}
-                {(language === 'es' && product.badgeTextSpanish ? product.badgeTextSpanish : product.badgeText) && (
-                  <div className="discount-badge">
-                    {language === 'es' && product.badgeTextSpanish ? product.badgeTextSpanish : product.badgeText}
+        {hasSubcategories ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '4rem' }}>
+            {currentCategoryObj.subcategories
+              .filter(subcat => activeSubcategory === 'all' || activeSubcategory === subcat.id)
+              .map(subcat => {
+              const subcatProducts = displayedProducts.filter(p => p.subcategory === subcat.id);
+              if (subcatProducts.length === 0) return null;
+              
+              return (
+                <div key={subcat.id} id={`subcat-${subcat.id}`}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '2px solid #E5DED0', marginBottom: '1.5rem', paddingBottom: '0.5rem' }}>
+                    <h2 style={{ margin: 0, color: 'var(--color-primary)' }}>
+                      {language === 'es' && subcat.nameSpanish ? subcat.nameSpanish : subcat.name}
+                    </h2>
+                    {activeSubcategory === 'all' && (
+                      <button 
+                        onClick={() => setActiveSubcategory(subcat.id)}
+                        style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: '0.9rem', textDecoration: 'underline' }}
+                      >
+                        {language === 'es' ? 'ver todas las artesanías' : 'see all handicrafts'}
+                      </button>
+                    )}
                   </div>
-                )}
-              </div>
-              <div className="card-content" style={{ padding: '1rem' }}>
-
-                <h3 className="product-title">{language === 'es' && product.nameSpanish ? product.nameSpanish : product.name}</h3>
-                <div className="product-prices">
-                  {product.oldPrice > 0 && <span className="price-old">€{(product.oldPrice || 0).toFixed(2)}</span>}
-                  <span className="price-new">€{(product.price || 0).toFixed(2)}</span>
-                </div>
-                  <button 
-                    className="btn btn-outline add-to-cart-btn"
-                    onClick={(e) => handleAddToCart(e, product)}
+                  <div 
+                    className={activeSubcategory === 'all' ? 'horizontal-scroll-container' : `collections-product-grid grid-${viewMode}`}
+                    style={activeSubcategory === 'all' ? { display: 'flex', overflowX: 'auto', gap: '1.5rem', paddingBottom: '1rem', scrollbarWidth: 'thin' } : {}}
                   >
-                    {language === 'es' ? 'AÑADIR A CONSULTA' : 'ADD TO INQUIRY'}
-                  </button>
-              </div>
-            </Link>
-          ))}
-        </div>
+                    {subcatProducts.map(product => (
+                      <Link 
+                        to={`/product/${product.id}`} 
+                        key={product.id} 
+                        className="card product-card-filter"
+                        style={activeSubcategory === 'all' ? { width: '280px', flex: '0 0 280px' } : {}}
+                      >
+                        <div className={`card-image ${product.color}`} style={{ aspectRatio: '1 / 1', height: 'auto', position: 'relative' }}>
+                          {product.image ? (
+                            <AdvancedImage 
+                              cldImg={cld.image(product.image).resize(fill().width(300).height(300)).format('auto').quality('auto')} 
+                              plugins={[lazyload(), placeholder({mode: 'blur'})]}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                            />
+                          ) : (
+                            <div style={{ width: '100%', height: '100%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>{language === 'es' ? 'Sin Imagen' : 'No Image'}</div>
+                          )}
+                          {(language === 'es' && product.badgeTextSpanish ? product.badgeTextSpanish : product.badgeText) && (
+                            <div className="discount-badge">
+                              {language === 'es' && product.badgeTextSpanish ? product.badgeTextSpanish : product.badgeText}
+                            </div>
+                          )}
+                        </div>
+                        <div className="card-content" style={{ padding: '1rem' }}>
+
+                          <h3 className="product-title">{language === 'es' && product.nameSpanish ? product.nameSpanish : product.name}</h3>
+                          <div className="product-prices">
+                            {product.oldPrice > 0 && <span className="price-old">€{(product.oldPrice || 0).toFixed(2)}</span>}
+                            <span className="price-new">€{(product.price || 0).toFixed(2)}</span>
+                          </div>
+                            <button 
+                              className="btn btn-outline add-to-cart-btn"
+                              onClick={(e) => handleAddToCart(e, product)}
+                            >
+                              {language === 'es' ? 'AÑADIR A CONSULTA' : 'ADD TO INQUIRY'}
+                            </button>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+            
+            {(() => {
+              const uncatProducts = displayedProducts.filter(p => !p.subcategory);
+              if (uncatProducts.length > 0) {
+                return (
+                  <div id="subcat-uncategorized">
+                    <h2 style={{ marginBottom: '1.5rem', color: '#666', borderBottom: '2px solid #eee', paddingBottom: '0.5rem' }}>Other Items</h2>
+                    <div className={`collections-product-grid grid-${viewMode}`}>
+                      {uncatProducts.map(product => (
+                        <Link to={`/product/${product.id}`} key={product.id} className="card product-card-filter">
+                          <div className={`card-image ${product.color}`} style={{ aspectRatio: '1 / 1', height: 'auto', position: 'relative' }}>
+                            {product.image ? (
+                              <AdvancedImage 
+                                cldImg={cld.image(product.image).resize(fill().width(300).height(300)).format('auto').quality('auto')} 
+                                plugins={[lazyload(), placeholder({mode: 'blur'})]}
+                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                              />
+                            ) : (
+                              <div style={{ width: '100%', height: '100%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>{language === 'es' ? 'Sin Imagen' : 'No Image'}</div>
+                            )}
+                            {(language === 'es' && product.badgeTextSpanish ? product.badgeTextSpanish : product.badgeText) && (
+                              <div className="discount-badge">
+                                {language === 'es' && product.badgeTextSpanish ? product.badgeTextSpanish : product.badgeText}
+                              </div>
+                            )}
+                          </div>
+                          <div className="card-content" style={{ padding: '1rem' }}>
+
+                            <h3 className="product-title">{language === 'es' && product.nameSpanish ? product.nameSpanish : product.name}</h3>
+                            <div className="product-prices">
+                              {product.oldPrice > 0 && <span className="price-old">€{(product.oldPrice || 0).toFixed(2)}</span>}
+                              <span className="price-new">€{(product.price || 0).toFixed(2)}</span>
+                            </div>
+                              <button 
+                                className="btn btn-outline add-to-cart-btn"
+                                onClick={(e) => handleAddToCart(e, product)}
+                              >
+                                {language === 'es' ? 'AÑADIR A CONSULTA' : 'ADD TO INQUIRY'}
+                              </button>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+          </div>
+        ) : (
+          <div className={`collections-product-grid grid-${viewMode}`}>
+            {displayedProducts.map(product => (
+              <Link to={`/product/${product.id}`} key={product.id} className="card product-card-filter">
+                <div className={`card-image ${product.color}`} style={{ aspectRatio: '1 / 1', height: 'auto', position: 'relative' }}>
+                  {product.image ? (
+                    <AdvancedImage 
+                      cldImg={cld.image(product.image).resize(fill().width(300).height(300)).format('auto').quality('auto')} 
+                      plugins={[lazyload(), placeholder({mode: 'blur'})]}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <div style={{ width: '100%', height: '100%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999' }}>{language === 'es' ? 'Sin Imagen' : 'No Image'}</div>
+                  )}
+                  {(language === 'es' && product.badgeTextSpanish ? product.badgeTextSpanish : product.badgeText) && (
+                    <div className="discount-badge">
+                      {language === 'es' && product.badgeTextSpanish ? product.badgeTextSpanish : product.badgeText}
+                    </div>
+                  )}
+                </div>
+                <div className="card-content" style={{ padding: '1rem' }}>
+
+                  <h3 className="product-title">{language === 'es' && product.nameSpanish ? product.nameSpanish : product.name}</h3>
+                  <div className="product-prices">
+                    {product.oldPrice > 0 && <span className="price-old">€{(product.oldPrice || 0).toFixed(2)}</span>}
+                    <span className="price-new">€{(product.price || 0).toFixed(2)}</span>
+                  </div>
+                    <button 
+                      className="btn btn-outline add-to-cart-btn"
+                      onClick={(e) => handleAddToCart(e, product)}
+                    >
+                      {language === 'es' ? 'AÑADIR A CONSULTA' : 'ADD TO INQUIRY'}
+                    </button>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
     </div>
     

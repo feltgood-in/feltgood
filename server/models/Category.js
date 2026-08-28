@@ -5,6 +5,11 @@ const CategorySchema = new mongoose.Schema({
   title: String,
   titleSpanish: String,
   subtitle: String,
+  subcategories: [{
+    id: String,
+    name: String,
+    nameSpanish: String
+  }],
   products: [{
     id: String,
     name: String,

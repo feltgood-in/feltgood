@@ -27,11 +27,18 @@ function Admin() {
   const [isAddingCollection, setIsAddingCollection] = useState(false);
   const [newCollectionTitle, setNewCollectionTitle] = useState('');
   const [renamingCategory, setRenamingCategory] = useState(false);
-  const [renamingCategoryTitle, setRenamingCategoryTitle] = useState('');
-  const [renamingCategoryTitleSpanish, setRenamingCategoryTitleSpanish] = useState('');
+  const [managingSubcategories, setManagingSubcategories] = useState(false);
+  const [newSubcatName, setNewSubcatName] = useState('');
+  const [newSubcatNameSpanish, setNewSubcatNameSpanish] = useState('');
+  
+  const [editingSubcategoryId, setEditingSubcategoryId] = useState(null);
+  const [editSubcatName, setEditSubcatName] = useState('');
+  const [editSubcatNameSpanish, setEditSubcatNameSpanish] = useState('');
 
   useEffect(() => {
     setRenamingCategory(false);
+    setManagingSubcategories(false);
+    setEditingSubcategoryId(null);
   }, [activeTab]);
   
   const [homepageData, setHomepageData] = useState(null);
@@ -161,8 +168,18 @@ function Admin() {
     if (!file) return;
     setUploadingImage(`${type}-${index}`);
     
+    let oldImageId = '';
+    if (type === 'banner' && homepageData.banners[index]) {
+      oldImageId = homepageData.banners[index].image || '';
+    } else if (type === 'promo' && homepageData.promoCards[index]) {
+      oldImageId = homepageData.promoCards[index].image || '';
+    }
+    
     const formData = new FormData();
     formData.append('image', file);
+    if (oldImageId) {
+      formData.append('oldImage', oldImageId);
+    }
 
     try {
       const res = await fetch('/api/upload', {
@@ -217,8 +234,18 @@ function Admin() {
     if (!file) return;
     setUploadingImage(`product-${index}`);
     
+    let oldImageId = '';
+    if (editingProduct.images && editingProduct.images[index]) {
+      oldImageId = editingProduct.images[index];
+    } else if (index === 0 && editingProduct.image) {
+      oldImageId = editingProduct.image;
+    }
+    
     const formData = new FormData();
     formData.append('image', file);
+    if (oldImageId) {
+      formData.append('oldImage', oldImageId);
+    }
 
     try {
       const res = await fetch('/api/upload', {
@@ -346,6 +373,113 @@ function Admin() {
     } catch (err) {
       console.error(err);
       alert('Failed to rename collection');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddSubcategory = async (catId) => {
+    if (!newSubcatName.trim()) return;
+    const catIndex = categories.findIndex(c => c.id === catId);
+    if (catIndex === -1) return;
+    const updatedCategories = [...categories];
+    const cat = updatedCategories[catIndex];
+    if (!cat.subcategories) cat.subcategories = [];
+    
+    const id = newSubcatName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    if (cat.subcategories.find(s => s.id === id)) {
+      alert("Subcategory with this name already exists");
+      return;
+    }
+    
+    cat.subcategories.push({ id, name: newSubcatName.trim(), nameSpanish: newSubcatNameSpanish.trim() });
+    
+    setCategories(updatedCategories);
+    setLoading(true);
+    
+    try {
+      const res = await fetch('/api/products', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ categories: updatedCategories, products })
+      });
+      if (res.ok) {
+        setSuccessMessage('Subcategory added successfully!');
+        setNewSubcatName('');
+        setNewSubcatNameSpanish('');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to add subcategory');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteSubcategory = async (catId, subcatId) => {
+    const catIndex = categories.findIndex(c => c.id === catId);
+    if (catIndex === -1) return;
+    const updatedCategories = [...categories];
+    updatedCategories[catIndex].subcategories = updatedCategories[catIndex].subcategories.filter(s => s.id !== subcatId);
+    
+    // Also remove from products
+    const updatedProducts = products.map(p => {
+      if (p.categoryId === catId && p.subcategory === subcatId) {
+        return { ...p, subcategory: null };
+      }
+      return p;
+    });
+
+    setCategories(updatedCategories);
+    setProducts(updatedProducts);
+    setLoading(true);
+    
+    try {
+      const res = await fetch('/api/products', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ categories: updatedCategories, products: updatedProducts })
+      });
+      if (res.ok) {
+        setSuccessMessage('Subcategory deleted successfully!');
+        setTimeout(() => setSuccessMessage(''), 3000);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to delete subcategory');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSaveEditSubcategory = async (catId) => {
+    const catIndex = categories.findIndex(c => c.id === catId);
+    if (catIndex === -1) return;
+    const updatedCategories = [...categories];
+    const subIndex = updatedCategories[catIndex].subcategories.findIndex(s => s.id === editingSubcategoryId);
+    if (subIndex === -1) return;
+    
+    updatedCategories[catIndex].subcategories[subIndex].name = editSubcatName.trim();
+    updatedCategories[catIndex].subcategories[subIndex].nameSpanish = editSubcatNameSpanish.trim();
+    
+    setCategories(updatedCategories);
+    setLoading(true);
+    
+    try {
+      const res = await fetch('/api/products', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ categories: updatedCategories, products })
+      });
+      if (res.ok) {
+        setSuccessMessage('Subcategory updated successfully!');
+        setEditingSubcategoryId(null);
+        setTimeout(() => setSuccessMessage(''), 3000);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update subcategory');
     } finally {
       setLoading(false);
     }
@@ -1101,6 +1235,23 @@ function Admin() {
                         <label>Product Name</label>
                         <input type="text" value={editingProduct.name || ''} onChange={e => setEditingProduct({...editingProduct, name: e.target.value})} className="form-control" />
                       </div>
+                      
+                      {categories.find(c => c.id === editingProduct.categoryId)?.subcategories?.length > 0 && (
+                        <div className="form-group">
+                          <label>Subcategory</label>
+                          <select 
+                            value={editingProduct.subcategory || ''} 
+                            onChange={e => setEditingProduct({...editingProduct, subcategory: e.target.value})}
+                            className="form-control"
+                            style={{ padding: '0.8rem', border: '1px solid #ccc', borderRadius: '4px', width: '100%' }}
+                          >
+                            <option value="">-- No Subcategory --</option>
+                            {categories.find(c => c.id === editingProduct.categoryId).subcategories.map(sub => (
+                              <option key={sub.id} value={sub.id}>{sub.name}</option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1.5rem' }}>
@@ -1249,55 +1400,159 @@ function Admin() {
                     </div>
                   )}
                   <p style={{ margin: 0, color: '#666' }}>Edit items, prices, and upload images for this collection.</p>
+                  
+                  <button 
+                    onClick={() => setManagingSubcategories(!managingSubcategories)} 
+                    className="btn btn-outline" 
+                    style={{ padding: '0.3rem 0.8rem', fontSize: '0.8rem', width: 'max-content', marginTop: '0.5rem' }}
+                  >
+                    {managingSubcategories ? 'Hide Subcategories' : 'Manage Subcategories'}
+                  </button>
+                  
+                  {managingSubcategories && (
+                    <div style={{ marginTop: '1rem', background: '#f5f5f5', padding: '1rem', borderRadius: '8px', border: '1px solid #eaeaea', width: '100%', maxWidth: '600px' }}>
+                      <h4 style={{ margin: '0 0 1rem 0' }}>Subcategories</h4>
+                      
+                      {(() => {
+                        const currentCat = categories.find(c => c.id === activeTab.replace('products-', ''));
+                        if (!currentCat?.subcategories || currentCat.subcategories.length === 0) {
+                          return <p style={{ fontSize: '0.9rem', color: '#666' }}>No subcategories found.</p>;
+                        }
+                        return (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '1rem' }}>
+                            {currentCat.subcategories.map(sub => (
+                              <div key={sub.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid #ddd' }}>
+                                {editingSubcategoryId === sub.id ? (
+                                  <div style={{ display: 'flex', gap: '0.5rem', flex: 1, marginRight: '1rem' }}>
+                                    <input type="text" value={editSubcatName} onChange={e => setEditSubcatName(e.target.value)} className="form-control" style={{ flex: 1 }} />
+                                    <input type="text" value={editSubcatNameSpanish} onChange={e => setEditSubcatNameSpanish(e.target.value)} className="form-control" style={{ flex: 1 }} />
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <strong>{sub.name}</strong> 
+                                    <span style={{ color: '#666', fontSize: '0.9rem', marginLeft: '0.5rem' }}>({sub.nameSpanish || 'No Spanish name'})</span>
+                                  </div>
+                                )}
+                                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                                  {editingSubcategoryId === sub.id ? (
+                                    <>
+                                      <button onClick={() => handleSaveEditSubcategory(currentCat.id)} className="btn btn-primary" style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem' }}>Save</button>
+                                      <button onClick={() => setEditingSubcategoryId(null)} className="btn btn-outline" style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem' }}>Cancel</button>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <button onClick={() => { setEditingSubcategoryId(sub.id); setEditSubcatName(sub.name); setEditSubcatNameSpanish(sub.nameSpanish || ''); }} className="btn btn-outline" style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem' }}>Edit</button>
+                                      <button onClick={() => handleDeleteSubcategory(currentCat.id, sub.id)} className="btn btn-outline" style={{ padding: '0.2rem 0.5rem', fontSize: '0.8rem', color: '#d93025', borderColor: '#d93025' }}>Delete</button>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        );
+                      })()}
+                      
+                      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                        <input type="text" placeholder="English Name" value={newSubcatName} onChange={e => setNewSubcatName(e.target.value)} className="form-control" style={{ flex: 1, minWidth: '150px' }} />
+                        <input type="text" placeholder="Spanish Name" value={newSubcatNameSpanish} onChange={e => setNewSubcatNameSpanish(e.target.value)} className="form-control" style={{ flex: 1, minWidth: '150px' }} />
+                        <button onClick={() => handleAddSubcategory(activeTab.replace('products-', ''))} disabled={loading} className="btn btn-primary" style={{ padding: '0.6rem 1rem' }}>Add</button>
+                      </div>
+                    </div>
+                  )}
+                  
                 </div>
                 <button onClick={handleCreateNewProduct} className="btn btn-primary" style={{ padding: '0.6rem 1.5rem', marginTop: '0.5rem' }}>
                   + New Product
                 </button>
               </div>
-              <div style={{ background: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
-                <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-                  <thead>
-                    <tr style={{ background: '#f5f5f5', borderBottom: '2px solid #eaeaea' }}>
-                    <th style={{ padding: '1rem', width: '90px' }}>Item #</th>
-                    <th style={{ padding: '1rem', width: '80px' }}>Image</th>
-                    <th style={{ padding: '1rem' }}>Name</th>
-                    <th style={{ padding: '1rem' }}>Price</th>
-                    <th style={{ padding: '1rem', textAlign: 'right' }}>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {products.filter(p => p.categoryId === activeTab.replace('products-', '')).map((product, index) => (
-                    <tr key={product.id} style={{ borderBottom: '1px solid #eaeaea' }}>
-                      <td style={{ padding: '1rem', color: '#555', fontFamily: 'monospace' }}>
-                        {product.itemNumber || `ITM-${String(index + 1).padStart(3, '0')}`}
-                      </td>
-                      <td style={{ padding: '1rem' }}>
-                        <div style={{ width: '60px', height: '60px', background: '#f0f0f0', borderRadius: '4px', overflow: 'hidden' }}>
-                          {product.image ? (
-                            <AdvancedImage 
-                              cldImg={cld.image(product.image).resize(fill().width(100).height(100))} 
-                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                            />
-                          ) : (
-                            <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: '0.8rem' }}>No Img</div>
-                          )}
-                        </div>
-                      </td>
-                      <td style={{ padding: '1rem', fontWeight: 'bold' }}>{product.name}</td>
-                      <td style={{ padding: '1rem' }}>€{product.price?.toFixed(2) || '0.00'}</td>
-                      <td style={{ padding: '1rem', textAlign: 'right' }}>
-                        <button onClick={() => setEditingProduct(product)} className="btn btn-outline" style={{ padding: '0.4rem 1rem', fontSize: '0.9rem' }}>Edit</button>
-                      </td>
-                    </tr>
-                  ))}
-                  {products.filter(p => p.categoryId === activeTab.replace('products-', '')).length === 0 && (
-                    <tr>
-                      <td colSpan="5" style={{ padding: '2rem', textAlign: 'center', color: '#888' }}>No products found in this collection.</td>
-                    </tr>
-                  )}
-                  </tbody>
-                </table>
-              </div>
+              {(() => {
+                const currentCatId = activeTab.replace('products-', '');
+                const currentCategory = categories.find(c => c.id === currentCatId);
+                const catProducts = products.filter(p => p.categoryId === currentCatId);
+                
+                const renderTable = (productList) => (
+                  <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+                    <thead>
+                      <tr style={{ background: '#f5f5f5', borderBottom: '2px solid #eaeaea' }}>
+                        <th style={{ padding: '1rem', width: '90px' }}>Item #</th>
+                        <th style={{ padding: '1rem', width: '80px' }}>Image</th>
+                        <th style={{ padding: '1rem' }}>Name</th>
+                        <th style={{ padding: '1rem' }}>Price</th>
+                        <th style={{ padding: '1rem', textAlign: 'right' }}>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {productList.map((product, index) => (
+                        <tr key={product.id} style={{ borderBottom: '1px solid #eaeaea' }}>
+                          <td style={{ padding: '1rem', color: '#555', fontFamily: 'monospace' }}>
+                            {product.itemNumber || `ITM-${String(index + 1).padStart(3, '0')}`}
+                          </td>
+                          <td style={{ padding: '1rem' }}>
+                            <div style={{ width: '60px', height: '60px', background: '#f0f0f0', borderRadius: '4px', overflow: 'hidden' }}>
+                              {product.image ? (
+                                <AdvancedImage 
+                                  cldImg={cld.image(product.image).resize(fill().width(100).height(100))} 
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                />
+                              ) : (
+                                <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#999', fontSize: '0.8rem' }}>No Img</div>
+                              )}
+                            </div>
+                          </td>
+                          <td style={{ padding: '1rem', fontWeight: 'bold' }}>{product.name}</td>
+                          <td style={{ padding: '1rem' }}>€{product.price?.toFixed(2) || '0.00'}</td>
+                          <td style={{ padding: '1rem', textAlign: 'right' }}>
+                            <button onClick={() => setEditingProduct(product)} className="btn btn-outline" style={{ padding: '0.4rem 1rem', fontSize: '0.9rem' }}>Edit</button>
+                          </td>
+                        </tr>
+                      ))}
+                      {productList.length === 0 && (
+                        <tr>
+                          <td colSpan="5" style={{ padding: '2rem', textAlign: 'center', color: '#888' }}>No products found in this section.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                );
+
+                if (currentCategory?.subcategories && currentCategory.subcategories.length > 0) {
+                  return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                      {currentCategory.subcategories.map(subcat => {
+                        const subcatProducts = catProducts.filter(p => p.subcategory === subcat.id);
+                        return (
+                          <div key={subcat.id} style={{ background: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+                            <div style={{ padding: '1rem 1.5rem', background: '#f9f9f9', borderBottom: '1px solid #eaeaea' }}>
+                              <h3 style={{ margin: 0, color: 'var(--color-primary)' }}>{subcat.name}</h3>
+                            </div>
+                            {renderTable(subcatProducts)}
+                          </div>
+                        );
+                      })}
+                      {(() => {
+                        const uncatProducts = catProducts.filter(p => !p.subcategory);
+                        if (uncatProducts.length > 0) {
+                          return (
+                            <div style={{ background: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+                              <div style={{ padding: '1rem 1.5rem', background: '#fff9f9', borderBottom: '1px solid #eaeaea' }}>
+                                <h3 style={{ margin: 0, color: '#d93025' }}>Uncategorized Items</h3>
+                              </div>
+                              {renderTable(uncatProducts)}
+                            </div>
+                          );
+                        }
+                        return null;
+                      })()}
+                    </div>
+                  );
+                }
+
+                return (
+                  <div style={{ background: 'white', borderRadius: '8px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)', overflow: 'hidden' }}>
+                    {renderTable(catProducts)}
+                  </div>
+                );
+              })()}
             </>
             )}
           </div>

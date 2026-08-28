@@ -33,7 +33,7 @@ const AdminUser = require('./models/AdminUser');
 
 // Middleware
 app.use(cors()); // Allow cross-origin requests from React
-app.use(express.json()); // Parse JSON body
+app.use(express.json({ limit: '50mb' })); // Parse JSON body
 
 // Cloudinary Configuration
 cloudinary.config({ 
@@ -136,9 +136,19 @@ app.post('/api/inquiry', async (req, res) => {
 });
 
 // Endpoint to upload an image to Cloudinary (Admin Panel)
-app.post('/api/upload', upload.single('image'), (req, res) => {
+app.post('/api/upload', upload.single('image'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ success: false, message: 'No image file provided.' });
+  }
+
+  // Auto-delete old image if provided (skip sample images)
+  if (req.body.oldImage && typeof req.body.oldImage === 'string' && !req.body.oldImage.startsWith('cld-sample')) {
+    try {
+      await cloudinary.uploader.destroy(req.body.oldImage);
+    } catch (err) {
+      console.error('Failed to delete old image from Cloudinary:', err);
+      // We don't fail the upload if delete fails, just log it.
+    }
   }
 
   // Upload image to Cloudinary via stream
@@ -164,6 +174,9 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
 // Database Routes (MongoDB)
 app.get('/api/homepage', async (req, res) => {
   try {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     const data = await Homepage.findOne();
     res.json(data || {});
   } catch (error) {
@@ -183,6 +196,9 @@ app.put('/api/homepage', async (req, res) => {
 
 app.get('/api/products', async (req, res) => {
   try {
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
     const categories = await Category.find();
     const products = await Product.find();
     res.json({ categories, products });
