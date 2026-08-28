@@ -125,7 +125,7 @@ function Collections() {
           </svg>
         </div>
         
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginLeft: 'auto', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+        <div className="collections-filters-container">
           <div className="price-inputs" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
             <span style={{ fontWeight: 'bold', color: 'var(--color-primary)' }}>{language === 'es' ? 'Precio:' : 'Price:'}</span>
             <input type="number" placeholder="0" value={minPrice} onChange={e => setMinPrice(e.target.value)} min="0" style={{ width: '60px', padding: '0.4rem', border: '1px solid #E5DED0', borderRadius: '6px' }} />
@@ -173,11 +173,12 @@ function Collections() {
               return (
                 <div key={subcat.id} id={`subcat-${subcat.id}`}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', borderBottom: '2px solid #E5DED0', marginBottom: '1.5rem', paddingBottom: '0.5rem' }}>
-                    <h2 style={{ margin: 0, color: 'var(--color-primary)' }}>
+                    <h2 className="subcategory-title" style={{ margin: 0, color: 'var(--color-primary)' }}>
                       {language === 'es' && subcat.nameSpanish ? subcat.nameSpanish : subcat.name}
                     </h2>
                     {activeSubcategory === 'all' && (
                       <button 
+                        className="see-all-btn"
                         onClick={() => setActiveSubcategory(subcat.id)}
                         style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: '0.9rem', textDecoration: 'underline' }}
                       >

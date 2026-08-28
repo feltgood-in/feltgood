@@ -93,44 +93,46 @@ function Navbar() {
         </div>
         {isMenuOpen && <div className="mobile-overlay hide-on-desktop" onClick={() => setIsMenuOpen(false)}></div>}
         <div className={`nav-links ${isMenuOpen ? 'open' : ''}`}>
-          <Link to="/search" className="nav-icon-link search-icon-only" style={{ display: 'flex', alignItems: 'center', color: 'var(--color-primary)' }} onClick={() => setIsMenuOpen(false)}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </Link>
-          <div 
-            className="nav-icon-link nav-dropdown-container" 
-            style={{ display: 'flex', alignItems: 'center', color: 'var(--color-primary)', cursor: 'pointer' }}
-            onMouseEnter={() => setIsLangDropdownOpen(true)}
-            onMouseLeave={() => setIsLangDropdownOpen(false)}
-          >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M5 8l6 6"></path>
-              <path d="M4 14l6-6 2-3"></path>
-              <path d="M2 5h12"></path>
-              <path d="M7 2h1"></path>
-              <path d="M22 22l-5-10-5 10"></path>
-              <path d="M14 18h6"></path>
-            </svg>
-            {isLangDropdownOpen && (
-              <div className="nav-dropdown-menu" style={{ right: '-10px', left: 'auto', minWidth: '120px' }}>
-                <a 
-                  onClick={() => { setLanguage('en'); setIsLangDropdownOpen(false); }} 
-                  className={language === 'en' ? 'active' : ''} 
-                  style={{ cursor: 'pointer' }}
-                >
-                  English
-                </a>
-                <a 
-                  onClick={() => { setLanguage('es'); setIsLangDropdownOpen(false); }} 
-                  className={language === 'es' ? 'active' : ''} 
-                  style={{ cursor: 'pointer' }}
-                >
-                  Spanish
-                </a>
-              </div>
-            )}
+          <div className="mobile-icon-group" style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+            <Link to="/search" className="nav-icon-link search-icon-only" style={{ display: 'flex', alignItems: 'center', color: 'var(--color-primary)' }} onClick={() => setIsMenuOpen(false)}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </Link>
+            <div 
+              className="nav-icon-link nav-dropdown-container" 
+              style={{ display: 'flex', alignItems: 'center', color: 'var(--color-primary)', cursor: 'pointer' }}
+              onMouseEnter={() => setIsLangDropdownOpen(true)}
+              onMouseLeave={() => setIsLangDropdownOpen(false)}
+            >
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 8l6 6"></path>
+                <path d="M4 14l6-6 2-3"></path>
+                <path d="M2 5h12"></path>
+                <path d="M7 2h1"></path>
+                <path d="M22 22l-5-10-5 10"></path>
+                <path d="M14 18h6"></path>
+              </svg>
+              {isLangDropdownOpen && (
+                <div className="nav-dropdown-menu" style={{ right: '-10px', left: 'auto', minWidth: '120px' }}>
+                  <a 
+                    onClick={() => { setLanguage('en'); setIsLangDropdownOpen(false); }} 
+                    className={language === 'en' ? 'active' : ''} 
+                    style={{ cursor: 'pointer' }}
+                  >
+                    English
+                  </a>
+                  <a 
+                    onClick={() => { setLanguage('es'); setIsLangDropdownOpen(false); }} 
+                    className={language === 'es' ? 'active' : ''} 
+                    style={{ cursor: 'pointer' }}
+                  >
+                    Spanish
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
           <Link to="/" className="hide-on-desktop" onClick={() => setIsMenuOpen(false)}>
             {language === 'es' ? 'Inicio' : 'Home'}

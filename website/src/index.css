@@ -114,3 +114,19 @@ a {
 .text-center { text-align: center; }
 .section { padding: 6rem 0; }
 .bg-primary { background-color: var(--color-primary); color: var(--color-bg); }
+/* Collection Filters Responsive Layout */
+.collections-filters-container { display: flex; gap: 1rem; align-items: center; margin-left: auto; flex-wrap: wrap; justify-content: flex-end; }
+@media (max-width: 768px) {
+  .collections-filters-container { width: 100%; margin-left: 0; justify-content: space-between; flex-wrap: nowrap; gap: 0.5rem; }
+  .collections-filters-container .price-inputs { flex-wrap: nowrap; flex-shrink: 0; }
+  .collections-filters-container .sort-dropdown { max-width: 50%; text-overflow: ellipsis; padding: 0.5rem 1.5rem 0.5rem 0.5rem !important; }
+}
+/* Subcategory Title Mobile Sizing */
+@media (max-width: 768px) {
+  .subcategory-title {
+    font-size: 1.25rem !important;
+  }
+  .see-all-btn {
+    font-size: 0.75rem !important;
+  }
+}
