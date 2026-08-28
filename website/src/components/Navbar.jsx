@@ -21,6 +21,7 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [categories, setCategories] = React.useState([]);
   const [products, setProducts] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
     fetch('/api/products')
@@ -28,8 +29,12 @@ export default function Navbar() {
       .then(data => {
         setCategories(data.categories || []);
         setProducts(data.products || []);
+        setLoading(false);
       })
-      .catch(console.error);
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
   }, []);
 
   let activeCategoryId = currentCategory;
@@ -61,30 +66,38 @@ export default function Navbar() {
           </div>
         </Link>
         <div className="nav-tabs hide-on-mobile">
-          {categories.slice(0, 5).map(cat => (
-            <Link key={cat.id} href={`/collections?category=${cat.id}`} className={activeCategoryId === cat.id ? 'active' : ''}>
-              {language === 'es' && cat.titleSpanish ? cat.titleSpanish : cat.title}
-            </Link>
-          ))}
-          {categories.length > 5 && (
-            <div 
-              className="nav-dropdown-container" 
-              onMouseEnter={() => setIsDropdownOpen(true)}
-              onMouseLeave={() => setIsDropdownOpen(false)}
-            >
-              <span className={`nav-dropdown-trigger ${categories.slice(5).some(cat => cat.id === activeCategoryId) ? 'active' : ''}`} style={{ cursor: 'pointer', padding: '0.5rem', fontWeight: 500 }}>
-                {language === 'es' ? 'Colecciones ▾' : 'Collections ▾'}
-              </span>
-              {isDropdownOpen && (
-                <div className="nav-dropdown-menu">
-                  {categories.slice(5).map(cat => (
-                    <Link key={cat.id} href={`/collections?category=${cat.id}`} onClick={() => setTimeout(() => setIsDropdownOpen(false), 0)} className={activeCategoryId === cat.id ? 'active' : ''}>
-                      {language === 'es' && cat.titleSpanish ? cat.titleSpanish : cat.title}
-                    </Link>
-                  ))}
+          {loading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <span key={i} style={{ width: '80px', height: '20px', background: 'var(--color-bg-alt)', borderRadius: '4px', margin: '0 10px', animation: 'pulse 1.5s infinite' }}></span>
+            ))
+          ) : (
+            <>
+              {categories.slice(0, 5).map(cat => (
+                <Link key={cat.id} href={`/collections?category=${cat.id}`} className={activeCategoryId === cat.id ? 'active' : ''}>
+                  {language === 'es' && cat.titleSpanish ? cat.titleSpanish : cat.title}
+                </Link>
+              ))}
+              {categories.length > 5 && (
+                <div 
+                  className="nav-dropdown-container" 
+                  onMouseEnter={() => setIsDropdownOpen(true)}
+                  onMouseLeave={() => setIsDropdownOpen(false)}
+                >
+                  <span className={`nav-dropdown-trigger ${categories.slice(5).some(cat => cat.id === activeCategoryId) ? 'active' : ''}`} style={{ cursor: 'pointer', padding: '0.5rem', fontWeight: 500 }}>
+                    {language === 'es' ? 'Colecciones ▾' : 'Collections ▾'}
+                  </span>
+                  {isDropdownOpen && (
+                    <div className="nav-dropdown-menu">
+                      {categories.slice(5).map(cat => (
+                        <Link key={cat.id} href={`/collections?category=${cat.id}`} onClick={() => setTimeout(() => setIsDropdownOpen(false), 0)} className={activeCategoryId === cat.id ? 'active' : ''}>
+                          {language === 'es' && cat.titleSpanish ? cat.titleSpanish : cat.title}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
-            </div>
+            </>
           )}
           <Link href="/contact">{language === 'es' ? 'Contacto' : 'Contact'}</Link>
         </div>

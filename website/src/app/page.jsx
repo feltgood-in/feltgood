@@ -81,13 +81,7 @@ function Home() {
     touchEnd.current = null;
   };
 
-  if (loading) {
-    return (
-      <div style={{ height: '70vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <p style={{ color: 'var(--color-text-light)', letterSpacing: '2px' }}>{language === 'es' ? 'CARGANDO...' : 'LOADING...'}</p>
-      </div>
-    );
-  }
+
 
   return (
     <>
@@ -174,7 +168,12 @@ function Home() {
       </section>
 
       {/* Collections Section */}
-      <section id="collections" className="section container">
+      {loading ? (
+        <div style={{ height: '30vh', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6rem' }}>
+          <p style={{ color: 'var(--color-text-light)', letterSpacing: '2px', animation: 'pulse 1.5s infinite' }}>{language === 'es' ? 'CARGANDO COLECCIONES...' : 'LOADING COLLECTIONS...'}</p>
+        </div>
+      ) : (
+        <section id="collections" className="section container">
         {homepageData && categories.map((category) => {
           const featuredIds = homepageData.categoryFeaturedItems?.[category.id] || [];
           if (featuredIds.length === 0) return null; // Hide category if no products selected
@@ -217,7 +216,8 @@ function Home() {
             </div>
           );
         })}
-      </section>
+        </section>
+      )}
 
       {/* Promotional Banner */}
       <section className="promo-banner">
