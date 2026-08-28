@@ -167,7 +167,7 @@ app.get('/api/homepage', async (req, res) => {
     const data = await Homepage.findOne();
     res.json(data || {});
   } catch (error) {
-    res.status(500).json({ message: "Error fetching homepage data" });
+    res.status(500).json({ message: "Error fetching homepage data", error: error.message, stack: error.stack });
   }
 });
 
@@ -177,7 +177,7 @@ app.put('/api/homepage', async (req, res) => {
     await Homepage.create(req.body);
     res.json({ success: true, message: "Homepage updated successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Error updating homepage data" });
+    res.status(500).json({ message: "Error updating homepage data", error: error.message });
   }
 });
 
@@ -194,7 +194,7 @@ app.get('/api/products', async (req, res) => {
     productCache = { categories, products };
     res.json(productCache);
   } catch (error) {
-    res.status(500).json({ message: "Error fetching products" });
+    res.status(500).json({ message: "Error fetching products", error: error.message, stack: error.stack });
   }
 });
 
