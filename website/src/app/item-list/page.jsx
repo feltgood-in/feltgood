@@ -30,7 +30,7 @@ function ItemList() {
         <div className="empty-state text-center" style={{ padding: '4rem', background: '#fffdfa', borderRadius: '20px', border: '1px solid #E5DED0' }}>
           <h3 style={{ fontFamily: 'var(--font-serif)', marginBottom: '1rem', color: 'var(--color-primary)' }}>{language === 'es' ? 'Su lista está vacía actualmente' : 'Your list is currently empty'}</h3>
           <p style={{ opacity: 0.8, marginBottom: '2rem' }}>{language === 'es' ? 'Explore nuestras colecciones para añadir artículos a su consulta mayorista.' : 'Browse our collections to add items to your wholesale inquiry.'}</p>
-          <Link to="/" className="btn">{language === 'es' ? 'Volver a Colecciones' : 'Return to Collections'}</Link>
+          <Link href="/" className="btn">{language === 'es' ? 'Volver a Colecciones' : 'Return to Collections'}</Link>
         </div>
       ) : (
         <div className="inquiry-content split-layout">

@@ -1,16 +1,15 @@
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useInquiry } from '../../context/InquiryContext';
-import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
 import { cld } from '../../cloudinary';
 import { useLanguage } from '../../context/LanguageContext';
 
-function Search() {
+function SearchContent() {
   const [products, setProducts] = useState([]);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
   const [searchInput, setSearchInput] = useState(query);
   const { addToInquiry } = useInquiry();
@@ -18,7 +17,7 @@ function Search() {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    setSearchParams({ q: searchInput });
+    window.location.href = `/search?q=${encodeURIComponent(searchInput)}`;
   };
 
   const [loading, setLoading] = useState(true);
@@ -79,7 +78,7 @@ function Search() {
     <>
     <div className="search-page container section animate-fade-in" style={{ paddingBottom: '6rem' }}>
       <div className="breadcrumb" style={{ marginBottom: '1rem' }}>
-        <Link to="/">{language === 'es' ? 'Inicio' : 'Home'}</Link> / <span>{language === 'es' ? 'Buscar' : 'Search'}</span>
+        <Link href="/">{language === 'es' ? 'Inicio' : 'Home'}</Link> / <span>{language === 'es' ? 'Buscar' : 'Search'}</span>
       </div>
 
       <form onSubmit={handleSearchSubmit} style={{ display: 'flex', gap: '0.5rem', maxWidth: '600px', margin: '0 auto 2rem' }}>
@@ -105,12 +104,12 @@ function Search() {
       {searchResults.length > 0 ? (
         <div className="collections-product-grid">
           {searchResults.map(product => (
-            <Link to={`/product/${product.id}`} key={product.id} className="card product-card-filter">
+            <Link href={`/product/${product.id}`} key={product.id} className="card product-card-filter">
               <div className={`card-image ${product.color}`} style={{ height: '240px', position: 'relative' }}>
                 {product.image ? (
-                  <AdvancedImage 
-                    cldImg={cld.image(product.image).resize(fill().width(300).height(300)).format('auto').quality('auto')} 
-                    plugins={[lazyload(), placeholder({mode: 'blur'})]}
+                  <img 
+                    src={cld.image(product.image).resize(fill().width(300).height(300)).format('auto').quality('auto').toURL()} 
+                    alt={product.name}
                     style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                   />
                 ) : (
@@ -136,7 +135,7 @@ function Search() {
           <p style={{ marginBottom: '2rem', color: 'var(--color-text-light)' }}>
             {language === 'es' ? `No pudimos encontrar nada que coincida con "${query}". Intente revisar su ortografía o use términos más generales.` : `We couldn't find anything matching "${query}". Try checking your spelling or use more general terms.`}
           </p>
-          <Link to="/collections" className="btn btn-outline">{language === 'es' ? 'Explorar Colecciones' : 'Browse Collections'}</Link>
+          <Link href="/collections" className="btn btn-outline">{language === 'es' ? 'Explorar Colecciones' : 'Browse Collections'}</Link>
         </div>
       )}
     </div>
@@ -167,4 +166,10 @@ function Search() {
   );
 }
 
-export default Search;
+export default function Search() {
+  return (
+    <Suspense fallback={<div>Loading search...</div>}>
+      <SearchContent />
+    </Suspense>
+  );
+}
