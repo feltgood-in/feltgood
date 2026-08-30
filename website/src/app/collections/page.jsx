@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { useInquiry } from '../../context/InquiryContext';
 import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
 import { fill } from '@cloudinary/url-gen/actions/resize';
@@ -12,19 +12,39 @@ function CollectionsContent() {
   const { addToInquiry } = useInquiry();
   const { language } = useLanguage();
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  
   const selectedCategory = searchParams?.get('category') || 'all';
+  const initialSubcategory = searchParams?.get('subcategory') || 'all';
   
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [viewMode, setViewMode] = useState('4');
   const [sortOrder, setSortOrder] = useState('name-asc');
-  const [activeSubcategory, setActiveSubcategory] = useState('all');
+  const [activeSubcategory, setActiveSubcategory] = useState(initialSubcategory);
+
+  const handleSubcategoryChange = (subcatId) => {
+    setActiveSubcategory(subcatId);
+    const params = new URLSearchParams(searchParams.toString());
+    if (subcatId === 'all') {
+      params.delete('subcategory');
+    } else {
+      params.set('subcategory', subcatId);
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setActiveSubcategory('all');
-  }, [selectedCategory]);
+    // If the URL has no subcategory but category changed, reset to all
+    if (!searchParams?.has('subcategory')) {
+      setActiveSubcategory('all');
+    } else {
+      setActiveSubcategory(initialSubcategory);
+    }
+  }, [selectedCategory, initialSubcategory, searchParams]);
 
   useEffect(() => {
     fetch('/api/products')
@@ -126,7 +146,7 @@ function CollectionsContent() {
       {hasSubcategories && (
         <div className="subcategories-nav" style={{ overflowX: 'auto', whiteSpace: 'nowrap', marginBottom: '2rem', paddingBottom: '0.5rem', display: 'flex', gap: '1rem', borderBottom: '1px solid #eee', scrollbarWidth: 'none' }}>
           <button
-            onClick={() => setActiveSubcategory('all')}
+            onClick={() => handleSubcategoryChange('all')}
             style={{ border: 'none', cursor: 'pointer', color: activeSubcategory === 'all' ? 'white' : '#333', fontWeight: 'bold', padding: '0.5rem 1rem', background: activeSubcategory === 'all' ? 'var(--color-primary)' : '#f5f5f5', borderRadius: '20px', fontSize: '0.9rem', transition: '0.2s' }}
           >
             {language === 'es' ? 'Todos' : 'All'}
@@ -134,7 +154,7 @@ function CollectionsContent() {
           {currentCategoryObj.subcategories.map(subcat => (
             <button 
               key={subcat.id} 
-              onClick={() => setActiveSubcategory(subcat.id)} 
+              onClick={() => handleSubcategoryChange(subcat.id)} 
               style={{ border: 'none', cursor: 'pointer', color: activeSubcategory === subcat.id ? 'white' : '#333', fontWeight: 'bold', padding: '0.5rem 1rem', background: activeSubcategory === subcat.id ? 'var(--color-primary)' : '#f5f5f5', borderRadius: '20px', fontSize: '0.9rem', transition: '0.2s' }}
             >
               {language === 'es' && subcat.nameSpanish ? subcat.nameSpanish : subcat.name}
@@ -163,7 +183,7 @@ function CollectionsContent() {
                     {activeSubcategory === 'all' && (
                       <button 
                         className="see-all-btn"
-                        onClick={() => setActiveSubcategory(subcat.id)}
+                        onClick={() => handleSubcategoryChange(subcat.id)}
                         style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: '0.9rem', textDecoration: 'underline' }}
                       >
                         {language === 'es' ? 'ver todas las artesanías' : 'see all handicrafts'}

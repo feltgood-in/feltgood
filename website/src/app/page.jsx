@@ -6,48 +6,20 @@ import { fill } from '@cloudinary/url-gen/actions/resize';
 import { useLanguage } from '../context/LanguageContext';
 import { cld } from '../cloudinary';
 
+const defaultSlides = [
+  { id: 1, color: "bg-slate", title: "Nuevas Llegadas Artesanales" },
+  { id: 2, color: "bg-clay", title: "Cerámica Artesanal" },
+  { id: 3, color: "bg-stone", title: "Textiles Tejidos a Mano" },
+  { id: 4, color: "bg-sand", title: "Esenciales de Madera" }
+];
 
-function Home() {
+function TopBannerCarousel({ slidesData }) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [homepageData, setHomepageData] = useState(null);
-  const [products, setProducts] = useState([]);
-  const [categories, setCategories] = useState([]);
-
-  const [loading, setLoading] = useState(true);
-  const { language } = useLanguage();
-
-  useEffect(() => {
-    Promise.all([
-      fetch('/api/homepage').then(res => res.json()),
-      fetch('/api/products').then(res => res.json())
-    ])
-    .then(([homeData, prodData]) => {
-      setHomepageData(homeData);
-      setProducts(prodData.products || []);
-      setCategories(prodData.categories || []);
-      setLoading(false);
-    })
-    .catch(err => {
-      console.error(err);
-      setLoading(false);
-    });
-  }, []);
-
-  const defaultSlides = [
-    { id: 1, color: "bg-slate", title: language === 'es' ? "Nuevas Llegadas Artesanales" : "Handcrafted New Arrivals" },
-    { id: 2, color: "bg-clay", title: language === 'es' ? "Cerámica Artesanal" : "Artisanal Pottery" },
-    { id: 3, color: "bg-stone", title: language === 'es' ? "Textiles Tejidos a Mano" : "Handwoven Textiles" },
-    { id: 4, color: "bg-sand", title: language === 'es' ? "Esenciales de Madera" : "Woodcrafted Essentials" }
-  ];
-
-  const slides = (homepageData && homepageData.banners) ? homepageData.banners : defaultSlides;
+  const slides = slidesData && slidesData.length > 0 ? slidesData : defaultSlides;
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => {
-        if (!slides || slides.length === 0) return 0;
-        return (prev + 1) % slides.length;
-      });
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
     }, 5000);
     return () => clearInterval(timer);
   }, [slides]);
@@ -70,64 +42,77 @@ function Home() {
   const onTouchEndEvent = () => {
     if (!touchStart.current || !touchEnd.current) return;
     const distance = touchStart.current - touchEnd.current;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-    if (isLeftSwipe) {
-      nextSlide();
-    } else if (isRightSwipe) {
-      prevSlide();
-    }
+    if (distance > minSwipeDistance) nextSlide();
+    else if (distance < -minSwipeDistance) prevSlide();
     touchStart.current = null;
     touchEnd.current = null;
   };
 
+  return (
+    <section 
+      className="banner-carousel"
+      onDragStart={(e) => e.preventDefault()}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEndEvent}
+      onMouseDown={onTouchStart}
+      onMouseMove={(e) => { if (touchStart.current) onTouchMove(e); }}
+      onMouseUp={onTouchEndEvent}
+      onMouseLeave={() => { if (touchStart.current) onTouchEndEvent(); }}
+    >
+      <div className="carousel-track" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
+        {slides.map((slide) => (
+          <div key={slide.id} className={`carousel-slide ${slide.color}`} style={{ padding: 0 }}>
+             {slide.image && (
+               <AdvancedImage 
+                 cldImg={cld.image(slide.image).format('auto').quality('auto')} 
+                 plugins={[lazyload(), placeholder({mode: 'blur'})]}
+                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+               />
+             )}
+          </div>
+        ))}
+      </div>
+      <div className="carousel-dots">
+        {slides.map((_, idx) => (
+          <button 
+            key={idx} 
+            className={`dot ${idx === currentSlide ? 'active' : ''}`}
+            onClick={() => setCurrentSlide(idx)}
+          ></button>
+        ))}
+      </div>
+    </section>
+  );
+}
 
+function Home() {
+  const [homepageData, setHomepageData] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const { language } = useLanguage();
+
+  useEffect(() => {
+    Promise.all([
+      fetch('/api/homepage').then(res => res.json()),
+      fetch('/api/products').then(res => res.json())
+    ])
+    .then(([homeData, prodData]) => {
+      setHomepageData(homeData);
+      setProducts(prodData.products || []);
+      setCategories(prodData.categories || []);
+      setLoading(false);
+    })
+    .catch(err => {
+      console.error(err);
+      setLoading(false);
+    });
+  }, []);
 
   return (
     <>
-
-      {/* Top Banner Carousel */}
-      <section 
-        className="banner-carousel"
-        onDragStart={(e) => e.preventDefault()}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEndEvent}
-        onMouseDown={onTouchStart}
-        onMouseMove={(e) => {
-          if (touchStart.current) onTouchMove(e);
-        }}
-        onMouseUp={onTouchEndEvent}
-        onMouseLeave={() => {
-          if (touchStart.current) {
-            onTouchEndEvent();
-          }
-        }}
-      >
-        <div className="carousel-track" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-          {slides.map((slide) => (
-            <div key={slide.id} className={`carousel-slide ${slide.color}`} style={{ padding: 0 }}>
-               {slide.image && (
-                 <AdvancedImage 
-                   cldImg={cld.image(slide.image).format('auto').quality('auto')} 
-                   plugins={[lazyload(), placeholder({mode: 'blur'})]}
-                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                 />
-               )}
-            </div>
-          ))}
-        </div>
-        
-        <div className="carousel-dots">
-          {slides.map((_, idx) => (
-            <button 
-              key={idx} 
-              className={`dot ${idx === currentSlide ? 'active' : ''}`}
-              onClick={() => setCurrentSlide(idx)}
-            ></button>
-          ))}
-        </div>
-      </section>
+      <TopBannerCarousel slidesData={homepageData?.banners} />
 
       {/* Brand Introduction (Moved Hero) */}
       <section className="brand-intro text-center section container handicraft-texture" style={{ borderRadius: '16px', margin: '2rem auto' }}>
@@ -183,9 +168,6 @@ function Home() {
           const displayProducts = featuredIds
             .map(id => products.find(p => p.id === id))
             .filter(Boolean); // removes undefined if a product was deleted
-            
-          // Shuffle the products randomly
-          const shuffledProducts = [...displayProducts].sort(() => 0.5 - Math.random());
 
           return (
             <div key={category.id} className="category-group" style={{ marginBottom: '6rem' }}>
@@ -197,7 +179,7 @@ function Home() {
               </p>
               
               <div className="grid mobile-carousel">
-                {shuffledProducts.map((product) => {
+                {displayProducts.map((product) => {
                   return (
                   <Link href={`/product/${product.id}`} key={product.id} className="card">
                     <div className={`card-image ${product.color || 'bg-sand'}`}>
@@ -208,8 +190,23 @@ function Home() {
                       />
                     </div>
                     <div className="card-content">
-                      <h3 style={{ fontSize: '1.25rem' }}>{language === 'es' && product.nameSpanish ? product.nameSpanish : product.name}</h3>
-                      <p>{language === 'es' && product.descriptionSpanish ? product.descriptionSpanish : (product.desc || 'Premium handmade decor designed for elegant styling.')}</p>
+                      <h3 style={{ 
+                        fontSize: '1.25rem',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}>
+                        {language === 'es' && product.nameSpanish ? product.nameSpanish : product.name}
+                      </h3>
+                      <p style={{
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}>
+                        {language === 'es' && product.descriptionSpanish ? product.descriptionSpanish : (product.desc || 'Premium handmade decor designed for elegant styling.')}
+                      </p>
                     </div>
                   </Link>
                   );

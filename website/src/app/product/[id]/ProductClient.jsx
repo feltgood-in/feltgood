@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useInquiry } from '../../../context/InquiryContext';
 import { AdvancedImage, lazyload, placeholder } from '@cloudinary/react';
@@ -11,6 +11,7 @@ import { useLanguage } from '../../../context/LanguageContext';
 
 function ProductDetail() {
   const { id } = useParams();
+  const router = useRouter();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const { language } = useLanguage();
@@ -69,7 +70,12 @@ function ProductDetail() {
       <div className="container">
         
         <div style={{ marginBottom: '2rem', fontSize: '0.9rem', color: '#666', textTransform: 'uppercase', letterSpacing: '1px' }}>
-          <Link href="/" style={{ color: 'var(--color-primary)', textDecoration: 'none' }}>{language === 'es' ? 'Colecciones' : 'Collections'}</Link> 
+          <button 
+            onClick={() => router.back()} 
+            style={{ color: 'var(--color-primary)', textDecoration: 'none', background: 'none', border: 'none', padding: 0, font: 'inherit', cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '1px' }}
+          >
+            {language === 'es' ? 'Volver' : 'Back'}
+          </button> 
           <span style={{ margin: '0 0.5rem' }}>/</span> 
           <span>{language === 'es' && product.nameSpanish ? product.nameSpanish : product.name}</span>
         </div>
