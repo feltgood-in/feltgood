@@ -70,9 +70,9 @@ export default function Contact() {
             
             <div className="flex justify-center my-8">
               <div className="w-56 h-56 md:w-64 md:h-64 rounded-full overflow-hidden relative" style={{ border: '2px solid #fffdfa' }}>
-                <AdvancedImage 
-                  cldImg={cld.image('gbo9uxvepauq2xkewek2').resize(fill().width(400).height(400)).format('auto').quality('auto')} 
-                  plugins={[lazyload(), placeholder({mode: 'blur'})]}
+                <img 
+                  src="/gbo9uxvepauq2xkewek2.webp" 
+                  alt="Contact Profile"
                   className="w-full h-full object-cover"
                 />
               </div>
