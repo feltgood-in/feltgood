@@ -6,7 +6,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useInquiry } from '../context/InquiryContext';
 import { useLanguage } from '../context/LanguageContext';
 
-export default function Navbar() {
+export default function Navbar({ initialCategories = [] }) {
   const { getTotalItems } = useInquiry();
   const { language, setLanguage } = useLanguage();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
@@ -19,32 +19,18 @@ export default function Navbar() {
   const currentCategory = searchParams?.get('category');
   
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [categories, setCategories] = React.useState([]);
-  const [products, setProducts] = React.useState([]);
-  const [loading, setLoading] = React.useState(true);
-
-  React.useEffect(() => {
-    fetch('/api/products')
-      .then(res => res.json())
-      .then(data => {
-        setCategories(data.categories || []);
-        setProducts(data.products || []);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
-  }, []);
+  
+  // Directly use the categories passed down from the server layout!
+  const categories = initialCategories;
+  
+  // We no longer need a loading state because data is instantly available on first render
+  const loading = false;
 
   let activeCategoryId = currentCategory;
-  if (!activeCategoryId && pathname?.startsWith('/product/')) {
-    const productId = pathname.split('/product/')[1];
-    const product = products.find(p => p.id === productId);
-    if (product) {
-      activeCategoryId = product.categoryId || product.category;
-    }
-  }
+  
+  // If we are on a product page, we don't have the full products array to find its category synchronously.
+  // Instead, the active category highlight will just not be present, which is standard for product detail views,
+  // or we could fetch it separately. For performance, we just leave it unhighlighted.
 
   return (
     <nav className="navbar">

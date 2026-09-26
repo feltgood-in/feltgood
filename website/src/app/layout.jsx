@@ -5,6 +5,10 @@ import { LanguageProvider } from '../context/LanguageContext';
 import Footer from '../components/Footer';
 import ClientLayoutWrapper from '../components/ClientLayoutWrapper';
 import './globals.css';
+import dbConnect from '../lib/db';
+import Category from '../lib/models/Category';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata = {
   metadataBase: new URL('https://feltgood.in'),
@@ -37,13 +41,22 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  let categories = [];
+  try {
+    await dbConnect();
+    const cats = await Category.find().lean();
+    categories = JSON.parse(JSON.stringify(cats || []));
+  } catch (err) {
+    console.error("Failed to fetch categories for layout", err);
+  }
+
   return (
     <html lang="en">
       <body>
         <LanguageProvider>
           <InquiryProvider>
-            <ClientLayoutWrapper>
+            <ClientLayoutWrapper initialCategories={categories}>
               {children}
             </ClientLayoutWrapper>
           </InquiryProvider>
