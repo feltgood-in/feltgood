@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const HomepageSchema = new mongoose.Schema({
   heroBanners: [{
@@ -23,4 +23,4 @@ const HomepageSchema = new mongoose.Schema({
   }
 }, { strict: false });
 
-module.exports = mongoose.models.Homepage || mongoose.model('Homepage', HomepageSchema);
+export default mongoose.models.Homepage || mongoose.model('Homepage', HomepageSchema);

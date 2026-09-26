@@ -66,76 +66,6 @@ setInterval(() => {
   }
 }, 24 * 60 * 60 * 1000);
 
-// Endpoint to handle inquiry submissions
-app.post('/api/inquiry', async (req, res) => {
-  try {
-    const { source, name, email, mobile, quantity, message, items } = req.body;
-
-    // Check Email Rate Limit
-    if (email) {
-      const emailLower = email.toLowerCase();
-      if (!emailRateLimits[emailLower]) {
-        emailRateLimits[emailLower] = 1;
-      } else {
-        emailRateLimits[emailLower]++;
-      }
-
-      if (emailRateLimits[emailLower] > 5) {
-        return res.status(429).json({ success: false, message: 'Daily limit reached: You can only send 5 inquiries per day from this email address.' });
-      }
-    }
-
-    // Construct the email body based on the source (Contact Page or ItemList Popup)
-    let emailHtml = `
-      <h2>New Inquiry Received</h2>
-      <p><strong>Name:</strong> ${name || 'N/A'}</p>
-      <p><strong>Email:</strong> ${email || 'N/A'}</p>
-      <p><strong>Mobile:</strong> ${mobile || 'N/A'}</p>
-    `;
-
-    if (quantity) {
-      emailHtml += `<p><strong>Expected Quantity:</strong> ${quantity}</p>`;
-    }
-
-    if (message) {
-      emailHtml += `<p><strong>Message:</strong><br/>${message.replace(/\n/g, '<br/>')}</p>`;
-    }
-
-    if (items && items.length > 0) {
-      emailHtml += `<h3>Requested Items:</h3><ul>`;
-      items.forEach(item => {
-        emailHtml += `<li>${item.name} - Qty: ${item.quantity}</li>`;
-      });
-      emailHtml += `</ul>`;
-    }
-
-    const mailOptions = {
-      from: `"${name || 'Website Inquiry'}" <${process.env.GMAIL_USER}>`, // Shows the customer's name
-      to: process.env.GMAIL_USER, // Send it to yourself
-      subject: `New Wholesale Inquiry from ${name || email}`,
-      html: emailHtml,
-      replyTo: email // Allows you to reply directly to the customer
-    };
-
-    await transporter.sendMail(mailOptions);
-    
-    // Also save to MongoDB
-    await Message.create({
-      source,
-      name,
-      email,
-      mobile,
-      quantity,
-      message,
-      items
-    });
-
-    res.status(200).json({ success: true, message: 'Inquiry sent successfully.' });
-  } catch (error) {
-    console.error('Error sending email:', error);
-    res.status(500).json({ success: false, message: 'Failed to send inquiry.' });
-  }
-});
 
 // Endpoint to upload an image to Cloudinary (Admin Panel)
 app.post('/api/upload', upload.single('image'), async (req, res) => {
@@ -178,60 +108,8 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
 });
 
 // Database Routes (MongoDB)
-app.get('/api/homepage', async (req, res) => {
-  try {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    const data = await Homepage.findOne();
-    res.json(data || {});
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching homepage data" });
-  }
-});
 
-app.put('/api/homepage', async (req, res) => {
-  try {
-    await Homepage.deleteMany({});
-    await Homepage.create(req.body);
-    res.json({ success: true, message: "Homepage updated successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Error updating homepage data" });
-  }
-});
 
-app.get('/api/products', async (req, res) => {
-  try {
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    const categories = await Category.find();
-    const products = await Product.find();
-    res.json({ categories, products });
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching products" });
-  }
-});
-
-app.put('/api/products', async (req, res) => {
-  try {
-    const { categories, products } = req.body;
-    
-    if (categories) {
-      await Category.deleteMany({});
-      if (categories.length > 0) await Category.insertMany(categories);
-    }
-    
-    if (products) {
-      await Product.deleteMany({});
-      if (products.length > 0) await Product.insertMany(products);
-    }
-    
-    res.json({ success: true, message: "Products updated successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Error updating database" });
-  }
-});
 
 // Messages Routes
 app.get('/api/messages', async (req, res) => {

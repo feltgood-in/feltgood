@@ -16,7 +16,7 @@ function Collections() {
   
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [viewMode, setViewMode] = useState('4');
+
   const [sortOrder, setSortOrder] = useState('name-asc');
   const [activeSubcategory, setActiveSubcategory] = useState('all');
 
@@ -102,24 +102,7 @@ function Collections() {
       
       {/* Top Bar matching image */}
       <div className="collections-top-bar" style={{ padding: '0 4px', display: 'flex', flexWrap: 'wrap', gap: '1rem', alignItems: 'center' }}>
-        <div className="view-toggles hide-on-mobile" style={{ display: 'flex', gap: '15px', alignItems: 'center' }}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill={viewMode === '2' ? "var(--color-primary)" : "#ccc"} style={{ cursor: 'pointer', transition: 'fill 0.2s' }} onClick={() => setViewMode('2')}>
-            <rect x="2" y="4" width="8" height="16" rx="1"/>
-            <rect x="14" y="4" width="8" height="16" rx="1"/>
-          </svg>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill={viewMode === '3' ? "var(--color-primary)" : "#ccc"} style={{ cursor: 'pointer', transition: 'fill 0.2s' }} onClick={() => setViewMode('3')}>
-            <rect x="2" y="4" width="5.3" height="16" rx="1"/>
-            <rect x="9.3" y="4" width="5.3" height="16" rx="1"/>
-            <rect x="16.6" y="4" width="5.3" height="16" rx="1"/>
-          </svg>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill={viewMode === '4' ? "var(--color-primary)" : "#ccc"} style={{ cursor: 'pointer', transition: 'fill 0.2s' }} onClick={() => setViewMode('4')}>
-            <rect x="1" y="4" width="4" height="16" rx="1"/>
-            <rect x="7" y="4" width="4" height="16" rx="1"/>
-            <rect x="13" y="4" width="4" height="16" rx="1"/>
-            <rect x="19" y="4" width="4" height="16" rx="1"/>
-          </svg>
-        </div>
-        
+
         <div className="collections-filters-container">
           <select className="sort-dropdown" value={sortOrder} onChange={(e) => setSortOrder(e.target.value)} style={{ padding: '0.5rem 2rem 0.5rem 1rem', border: '1px solid #E5DED0', borderRadius: '6px', background: 'white', cursor: 'pointer', appearance: 'none', backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.7rem center', backgroundSize: '1em' }}>
             <option value="name-asc">{language === 'es' ? 'Nombre, A-Z' : 'Name, A-Z'}</option>
@@ -176,7 +159,7 @@ function Collections() {
                     )}
                   </div>
                   <div 
-                    className={activeSubcategory === 'all' ? 'horizontal-scroll-container' : `collections-product-grid grid-${viewMode}`}
+                    className={activeSubcategory === 'all' ? 'horizontal-scroll-container' : `collections-product-grid grid-4`}
                     style={activeSubcategory === 'all' ? { display: 'flex', overflowX: 'auto', gap: '1.5rem', paddingBottom: '1rem', scrollbarWidth: 'thin' } : {}}
                   >
                     {subcatProducts.map(product => (
@@ -226,7 +209,7 @@ function Collections() {
                 return (
                   <div id="subcat-uncategorized">
                     <h2 style={{ marginBottom: '1.5rem', color: '#666', borderBottom: '2px solid #eee', paddingBottom: '0.5rem' }}>Other Items</h2>
-                    <div className={`collections-product-grid grid-${viewMode}`}>
+                    <div className={`collections-product-grid grid-4`}>
                       {uncatProducts.map(product => (
                         <Link to={`/product/${product.id}`} key={product.id} className="card product-card-filter">
                           <div className={`card-image ${product.color}`} style={{ aspectRatio: '1 / 1', height: 'auto', position: 'relative' }}>
@@ -266,7 +249,7 @@ function Collections() {
             })()}
           </div>
         ) : (
-          <div className={`collections-product-grid grid-${viewMode}`}>
+          <div className={`collections-product-grid grid-4`}>
             {displayedProducts.map(product => (
               <Link to={`/product/${product.id}`} key={product.id} className="card product-card-filter">
                 <div className={`card-image ${product.color}`} style={{ aspectRatio: '1 / 1', height: 'auto', position: 'relative' }}>
