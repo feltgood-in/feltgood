@@ -11,8 +11,8 @@ export default async function Page() {
     } else {
       const apiUrl = process.env.API_URL || 'http://localhost:5000';
       const [homeRes, prodRes] = await Promise.all([
-        fetch(`${apiUrl}/api/homepage`, { next: { revalidate: 60 } }),
-        fetch(`${apiUrl}/api/products`, { next: { revalidate: 60 } })
+        fetch(`${apiUrl}/api/homepage`, { cache: 'no-store' }),
+        fetch(`${apiUrl}/api/products`, { cache: 'no-store' })
       ]);
       
       if (homeRes.ok) {
