@@ -5,7 +5,7 @@ import Homepage from '../lib/models/Homepage';
 import Category from '../lib/models/Category';
 import Product from '../lib/models/Product';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Cache for 60 seconds (ISR) for instant loading
 
 export default async function Page() {
   let homeData = null;

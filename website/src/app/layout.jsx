@@ -8,7 +8,7 @@ import './globals.css';
 import dbConnect from '../lib/db';
 import Category from '../lib/models/Category';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // Cache for 60 seconds (ISR) for instant loading
 
 export const metadata = {
   metadataBase: new URL('https://feltgood.in'),
