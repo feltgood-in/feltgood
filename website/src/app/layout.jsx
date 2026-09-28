@@ -13,14 +13,14 @@ export const revalidate = 60; // Cache for 60 seconds (ISR) for instant loading
 export const metadata = {
   metadataBase: new URL('https://feltgood.in'),
   title: {
-    default: 'Felt Good | Handcrafted with Heart',
+    default: 'Felt Good | Premium Home Decor & Handicraft Items',
     template: '%s | Felt Good',
   },
-  description: 'Premium handmade products curated for modern living and expressive collections.',
-  keywords: ['handmade', 'felt', 'ceramic', 'pottery', 'handcrafted', 'artisanal', 'home decor', 'lifestyle'],
+  description: 'Shop Felt Good for premium handmade home decor, authentic handicrafts, and artisanal decor items curated for modern living.',
+  keywords: ['Home decor', 'handicraft', 'Felt good', 'decor items', 'handmade', 'felt', 'ceramic', 'pottery', 'handcrafted', 'artisanal', 'lifestyle'],
   openGraph: {
-    title: 'Felt Good | Handcrafted with Heart',
-    description: 'Premium handmade products curated for modern living and expressive collections.',
+    title: 'Felt Good | Premium Home Decor & Handicraft Items',
+    description: 'Shop Felt Good for premium handmade home decor, authentic handicrafts, and artisanal decor items curated for modern living.',
     url: 'https://feltgood.in',
     siteName: 'Felt Good',
     images: [
@@ -35,8 +35,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Felt Good | Handcrafted with Heart',
-    description: 'Premium handmade products curated for modern living and expressive collections.',
+    title: 'Felt Good | Premium Home Decor & Handicraft Items',
+    description: 'Shop Felt Good for premium handmade home decor, authentic handicrafts, and artisanal decor items curated for modern living.',
     images: ['https://feltgood.in/feltgood.svg'],
   },
 };
