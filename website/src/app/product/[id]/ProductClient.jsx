@@ -9,27 +9,31 @@ import { cld } from '../../../cloudinary';
 import { useLanguage } from '../../../context/LanguageContext';
 
 
-function ProductDetail() {
+function ProductDetail({ initialProduct }) {
   const { id } = useParams();
   const router = useRouter();
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [product, setProduct] = useState(initialProduct);
+  const [loading, setLoading] = useState(!initialProduct);
   const { language } = useLanguage();
   
   useEffect(() => {
-    fetch('/api/products')
-      .then(res => res.json())
-      .then(data => {
-        setProducts(data.products || []);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error(err);
-        setLoading(false);
-      });
-  }, []);
-
-  const product = products.find(p => p.id === id);
+    if (!initialProduct) {
+      fetch('/api/products')
+        .then(res => res.json())
+        .then(data => {
+          const found = (data.products || []).find(p => p.id === id);
+          setProduct(found);
+          setLoading(false);
+        })
+        .catch(err => {
+          console.error(err);
+          setLoading(false);
+        });
+    } else {
+      setProduct(initialProduct);
+      setLoading(false);
+    }
+  }, [id, initialProduct]);
   const { addToInquiry, inquiryItems } = useInquiry();
   const existingItem = inquiryItems.find(item => item.id === product?.id);
   const [quantity, setQuantity] = useState(1);
